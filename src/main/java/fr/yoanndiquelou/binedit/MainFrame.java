@@ -1,6 +1,8 @@
 package fr.yoanndiquelou.binedit;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -11,7 +13,10 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 
+import fr.yoanndiquelou.binedit.laf.ui.BEEditorPaneUI;
 import fr.yoanndiquelou.binedit.menu.FrameMenu;
 import fr.yoanndiquelou.binedit.panel.ExplorerPanel;
 

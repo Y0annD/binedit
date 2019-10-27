@@ -4,6 +4,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.laf.BinEditLookAndFeel;
+import fr.yoanndiquelou.binedit.laf.ui.BinEditLookAndFeelCustomizer;
 
 /**
  * Hello world!
@@ -12,13 +13,9 @@ import fr.yoanndiquelou.binedit.laf.BinEditLookAndFeel;
 public class App {
 	public static void main( String[] args )
     {
-        try {
-        	BinEditLookAndFeel blaf = new BinEditLookAndFeel();
-            UIManager.setLookAndFeel(blaf);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
+
         SwingUtilities.invokeLater(()->{
+        	BinEditLookAndFeelCustomizer.customize();
         	MainFrame frame = new MainFrame();	
         });
     }
