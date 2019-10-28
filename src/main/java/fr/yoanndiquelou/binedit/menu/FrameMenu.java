@@ -12,7 +12,7 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import fr.yoanndiquelou.binedit.AppController;
-import fr.yoanndiquelou.binedit.panel.SettingsFrame;
+import fr.yoanndiquelou.binedit.panel.ViewerSettingsFrame;
 
 /**
  * Main frame menu.
@@ -57,9 +57,9 @@ public class FrameMenu extends JMenuBar {
 		// ------ Display menu
 		JMenuItem preferencesItem = new JMenuItem(mBundle.getString("menu.display.preferences"));
 //		preferencesItem.setEnabled(false);
-		preferencesItem.addActionListener(l->{
-			new SettingsFrame().setVisible(true);
-		});
+//		preferencesItem.addActionListener(l->{
+//			new ViewerSettingsFrame().setVisible(true);
+//		});
 		preferencesItem.setEnabled(!AppController.getInstance().getMDIPanel().getViewers().isEmpty());
 		displayMenu.add(preferencesItem);
 		displayMenu.add(new JSeparator());

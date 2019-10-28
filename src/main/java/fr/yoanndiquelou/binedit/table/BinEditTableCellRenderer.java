@@ -48,9 +48,28 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		List<Integer> selectedColumns = Arrays.stream(table.getSelectedColumns()).boxed().collect(Collectors.toList());
 		List<Integer> selectedRows = Arrays.stream(table.getSelectedRows()).boxed().collect(Collectors.toList());
 
-		if (selectedColumns.isEmpty() || selectedRows.isEmpty() || column == 0) {
-			selected = false;
-		} else {
+		if (selectedRows.size() > 1 && column != 0) {
+			// Cas ou l'on à plusieurs lignes selectionnées
+			int maxRows = selectedRows.get(selectedRows.size() - 1);
+			int minRows = selectedRows.get(0);
+			if (row > minRows && row < maxRows) {
+				selected = true;
+			} else if (row == minRows) {
+				if (column <= model.getSettings().getNbWordPerLine()) {
+					selected = column >= selectedColumns.get(0);
+				} else {
+					selected = column - model.getSettings().getNbWordPerLine() >= selectedColumns.get(0);
+				}
+			} else if (row == maxRows) {
+				if (column <= model.getSettings().getNbWordPerLine()) {
+					selected = column <= selectedColumns.get(selectedColumns.size() - 1);
+				} else {
+					selected = column - model.getSettings().getNbWordPerLine() <= selectedColumns
+							.get(selectedColumns.size() - 1);
+				}
+
+			}
+		} else if (!selectedColumns.isEmpty() && !selectedRows.isEmpty() && column != 0) {
 			if (column <= model.getSettings().getNbWordPerLine()) {
 				selected = selectedRows.contains(row) && (selectedColumns.contains(column)
 						|| selectedColumns.contains(column + model.getSettings().getNbWordPerLine()));

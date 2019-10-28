@@ -45,8 +45,15 @@ public class InfoPanel extends JPanel {
 	 * 
 	 * @param newAddr new address
 	 */
-	public void setAddr(long newAddr) {
-		mAddrLabel.setText(String.format("%02x", newAddr).toUpperCase(Locale.getDefault()));
+	public void setAddr(long newMinAddr, long newMaxAddr) {
+		String minAddr = String.format("%02x", newMinAddr).toUpperCase(Locale.getDefault());
+		String maxAddr = String.format("%02x", newMaxAddr).toUpperCase(Locale.getDefault());
+		if (minAddr.equals(maxAddr)) {
+			mAddrLabel.setText(minAddr);
+		} else {
+			mAddrLabel.setText(String.format("[%s;%s]", minAddr, maxAddr));
+		}
+
 	}
 
 }

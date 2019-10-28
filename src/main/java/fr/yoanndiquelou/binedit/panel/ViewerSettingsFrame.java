@@ -4,11 +4,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 
-public class SettingsFrame extends JFrame {
+public class ViewerSettingsFrame extends JDialog {
 
 	/**
 	 * 
@@ -17,7 +17,8 @@ public class SettingsFrame extends JFrame {
 	/** Number of word per line. */
 	private JSpinner mNumberOfWordTextField;
 
-	public SettingsFrame() {
+	public ViewerSettingsFrame(ViewerSettings viewerSettings) {
+		setModal(true);
 		setTitle("Préférences");
 		setName("Preferences");
 		setLayout(new GridBagLayout());
@@ -27,12 +28,13 @@ public class SettingsFrame extends JFrame {
 
 		JLabel label = new JLabel("Nombre de mots par ligne:");
 		JSpinner tf = new JSpinner();
-		tf.setValue(1);
+		tf.setValue(viewerSettings.getNbWordPerLine());
 		add(label, c);
 		c.gridx++;
 		add(tf, c);
 		JButton validate = new JButton("Validate");
 		validate.addActionListener(l -> {
+			viewerSettings.setNbWordPerline(Integer.valueOf(tf.getValue().toString()));
 			dispose();
 		});
 		c.gridx = 0;
