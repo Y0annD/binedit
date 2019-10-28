@@ -1,21 +1,34 @@
 package fr.yoanndiquelou.binedit.panel;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JDesktopPane;
 import javax.swing.SwingUtilities;
 
 public class MDIPanel extends JDesktopPane {
 
-	public MDIPanel() {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5498373389728564295L;
+	/** Collection des visualisateur ouvert. */
+	private Set<BinaryViewer> mViewers;
 
+	public MDIPanel() {
+		mViewers = new HashSet<>();
 	}
 
 	public void open(File file) {
-//		JInternalFrame frame = new JInternalFrame(file.getAbsolutePath(), true, true, true,
-//        true);
 		SwingUtilities.invokeLater(() -> {
-			add(new BinaryViewer(file));
+			BinaryViewer viewer = new BinaryViewer(file);
+			mViewers.add(viewer);
+			add(viewer);
 		});
+	}
+
+	public Set<BinaryViewer> getViewers() {
+		return mViewers;
 	}
 }

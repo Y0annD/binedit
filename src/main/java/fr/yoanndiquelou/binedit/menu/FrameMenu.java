@@ -60,6 +60,7 @@ public class FrameMenu extends JMenuBar {
 		preferencesItem.addActionListener(l->{
 			new SettingsFrame().setVisible(true);
 		});
+		preferencesItem.setEnabled(!AppController.getInstance().getMDIPanel().getViewers().isEmpty());
 		displayMenu.add(preferencesItem);
 		displayMenu.add(new JSeparator());
 

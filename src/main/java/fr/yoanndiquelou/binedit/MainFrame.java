@@ -38,9 +38,9 @@ public class MainFrame extends JFrame {
 
 		JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, explorerPanel, controller.getMDIPanel());
 		pane.setOneTouchExpandable(true);
-		pane.setDividerLocation(150);
+		pane.setDividerLocation(200);
 		// Provide minimum sizes for the two components in the split pane
-		Dimension minimumSize = new Dimension(100, 50);
+		Dimension minimumSize = new Dimension(150, 50);
 		explorerPanel.setMinimumSize(minimumSize);
 		controller.getMDIPanel().setMinimumSize(minimumSize);
 		controller.getMDIPanel().setDropTarget(new DropTarget() {
