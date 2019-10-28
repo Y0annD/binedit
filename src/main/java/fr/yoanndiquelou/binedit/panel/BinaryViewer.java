@@ -3,14 +3,16 @@ package fr.yoanndiquelou.binedit.panel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ResourceBundle;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -29,6 +31,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 * serial id.
 	 */
 	private static final long serialVersionUID = -5743598459949152992L;
+	/** Resources bundle for i18n. */
+	private ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
 
 	/** Viewed file. */
 	private File mFile;
@@ -38,6 +42,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	private ViewerSettings mSettings;
 	/** Table contenant le fichier. */
 	private JTable mTable;
+	/** Panel d'information. */
+	private InfoPanel mInfoPanel;
 
 	public BinaryViewer(File file) {
 		mFile = file;
@@ -68,6 +74,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		mTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		mTable.setDefaultRenderer(Object.class, renderer);
 		mTable.getColumnModel().getSelectionModel().addListSelectionListener(this);
+		mTable.getSelectionModel().addListSelectionListener(this);
 		TableColumn column = null;
 		int maxWidth = 0;
 		int width;
@@ -79,7 +86,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			if (i == 0) {
 				width = SwingUtilities.computeStringWidth(c.getFontMetrics(font), model.mMaxAddrStr) * 2;
 				column.setPreferredWidth(width);
-			} else if (i > mSettings.getNbWordPerLine() + 1) {
+			} else if (i > mSettings.getNbWordPerLine()) {
 				width = 17;
 				column.setPreferredWidth(width);
 			} else {
@@ -88,28 +95,60 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			}
 			maxWidth += width;
 		}
-		maxWidth += mSettings.getNbWordPerLine() + 15;
 		JScrollPane scroll = new JScrollPane(mTable);
+		BasicFileAttributes attr;
+		long size;
+		try {
+			attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			size = attr.size();
+		} catch (IOException e) {
+			size = 0;
+		}
 		getContentPane().add(scroll, BorderLayout.CENTER);
-		setMaximumSize(scroll.getMaximumSize());
-//		setMaximumSize(new Dimension(maxWidth, 900));
+		mInfoPanel = new InfoPanel(size);
+		getContentPane().add(mInfoPanel, BorderLayout.SOUTH);
+
 		setVisible(true);
 		pack();
-		addComponentListener(new ComponentAdapter() {
+		maxWidth += (mSettings.getNbWordPerLine() + 1) * mTable.getIntercellSpacing().width;
+		setMaximumSize(new Dimension(maxWidth + 30, 900));
 
-			@Override
-			public void componentResized(ComponentEvent e) {
-				super.componentResized(e);
-				if (null != mTable) {
-					mTable.repaint();
-				}
-			}
-		});
+//		addComponentListener(new ComponentAdapter() {
+//
+//			@Override
+//			public void componentResized(ComponentEvent e) {
+//				super.componentResized(e);
+//				if (null != mTable) {
+//					mTable.repaint();
+//				}
+//			}
+//		});
 	}
 
+	public JMenuBar getJMenuBar() {
+		JMenuBar menu = new JMenuBar();
+		JMenuItem preferencesItem = new JMenuItem(mBundle.getString("menu.display.preferences"));
+//		preferencesItem.setEnabled(false);
+		preferencesItem.addActionListener(l -> {
+			new SettingsFrame().setVisible(true);
+		});
+		menu.add(preferencesItem);
+		return menu;
+	}
+
+	/**
+	 * Repaint du tabulaire pour le changement de selection de la colone.
+	 */
 	public void valueChanged(ListSelectionEvent le) {
 		if (null != mTable) {
 			mTable.repaint();
+			long addr = mTable.getSelectedRow()
+					* ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine();
+			addr += mTable.getSelectedColumn();
+			if (mTable.getSelectedColumn() > ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine()) {
+				addr -= ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine();
+			}
+			mInfoPanel.setAddr(addr);
 		}
 	}
 

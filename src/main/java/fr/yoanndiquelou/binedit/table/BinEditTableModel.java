@@ -30,7 +30,7 @@ public class BinEditTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2 * mSettings.getNbWordPerLine() + 1;// +1 car on affiche l'adresse du premier mot
+		return 2 * mSettings.getNbWordPerLine()+1;
 	}
 
 	@Override
@@ -45,10 +45,10 @@ public class BinEditTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		String result;
-		if (columnIndex > mSettings.getNbWordPerLine() + 1) {
+		if (columnIndex > mSettings.getNbWordPerLine() ) {
 			byte[] content = new byte[1];
 			content[0] = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - mSettings.getNbWordPerLine()
-					- 2];
+					 - 1];
 			result = new String(content).replace("\n", ".").replace(" ", ".");
 		} else if (columnIndex > 0) {
 			result = String.format("%02x", mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1])
