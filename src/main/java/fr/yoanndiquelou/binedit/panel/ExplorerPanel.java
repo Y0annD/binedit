@@ -18,6 +18,7 @@ import javax.swing.tree.TreePath;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.handler.FileTransferHandler;
+import fr.yoanndiquelou.binedit.model.FileContentProvider;
 
 /**
  * Explorateur de fichiers.

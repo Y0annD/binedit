@@ -1,4 +1,4 @@
-package fr.yoanndiquelou.binedit.panel;
+package fr.yoanndiquelou.binedit.model;
 
 import java.io.File;
 import java.util.Arrays;
@@ -8,8 +8,9 @@ import java.util.ResourceBundle;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
+import fr.yoanndiquelou.binedit.panel.FileNode;
 
 public class FileContentProvider implements TreeModel {
 

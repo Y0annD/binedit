@@ -2,18 +2,26 @@ package fr.yoanndiquelou.binedit;
 
 import java.io.File;
 
-import javax.swing.JLabel;
-
 import fr.yoanndiquelou.binedit.panel.MDIPanel;
 
+/**
+ * Application controller.
+ * 
+ * @author yoann
+ *
+ */
 public class AppController {
-
+	/** This instance. */
 	private static AppController INSTANCE = new AppController();
 
+	/** MDI zone. */
 	private MDIPanel mMdiPanel = new MDIPanel();
 
+	/**
+	 * App controller constructor.
+	 */
 	private AppController() {
-
+		super();
 	}
 
 	/**
@@ -32,5 +40,5 @@ public class AppController {
 	public void openFile(File file) {
 		mMdiPanel.open(file);
 	}
-	
+
 }

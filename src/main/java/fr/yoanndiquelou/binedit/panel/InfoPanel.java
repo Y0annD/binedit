@@ -8,6 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import fr.yoanndiquelou.binedit.utils.AddressUtils;
+
 /**
  * Panel d'information sur le fichier ouvert.
  * 
@@ -25,6 +27,10 @@ public class InfoPanel extends JPanel {
 
 	/** Address label. */
 	private JLabel mAddrLabel;
+	/** Shift panel. */
+	private JPanel mShiftPanel;
+	/** Shift label. */
+	private JLabel mShiftLabel;
 
 	public InfoPanel(long size) {
 		setLayout(new BorderLayout());
@@ -33,11 +39,28 @@ public class InfoPanel extends JPanel {
 		JPanel sizePanel = new JPanel();
 		sizePanel.add(new JLabel(mBundle.getString("FILE_SIZE")));
 		sizePanel.add(new JLabel(String.valueOf(size)));
+		mShiftPanel = new JPanel();
+		mShiftPanel.add(new JLabel(mBundle.getString("SHIFT")));
+		mShiftLabel = new JLabel();
+		mShiftPanel.add(new JLabel());
+		mShiftPanel.setVisible(false);
 		JPanel addrPanel = new JPanel();
 		addrPanel.add(new JLabel(mBundle.getString("ADDRESS")));
 		addrPanel.add(mAddrLabel);
+
 		add(sizePanel, BorderLayout.WEST);
+		add(mShiftLabel, BorderLayout.CENTER);
 		add(addrPanel, BorderLayout.EAST);
+	}
+
+	/**
+	 * Set new shift value.
+	 * 
+	 * @param newShift shift value
+	 */
+	public void setShift(int newShift) {
+		mShiftLabel.setText(AddressUtils.getHexString(newShift, true));
+		mShiftPanel.setVisible(newShift != 0);
 	}
 
 	/**
@@ -46,12 +69,12 @@ public class InfoPanel extends JPanel {
 	 * @param newAddr new address
 	 */
 	public void setAddr(long newMinAddr, long newMaxAddr) {
-		String minAddr = String.format("%02x", newMinAddr).toUpperCase(Locale.getDefault());
-		String maxAddr = String.format("%02x", newMaxAddr).toUpperCase(Locale.getDefault());
+		String minAddr = AddressUtils.getHexString(newMinAddr);
+		String maxAddr = AddressUtils.getHexString(newMaxAddr);
 		if (minAddr.equals(maxAddr)) {
 			mAddrLabel.setText(minAddr);
 		} else {
-			mAddrLabel.setText(String.format("[%s;%s]", minAddr, maxAddr));
+			mAddrLabel.setText(String.format("[0x%s;0x%s]", minAddr, maxAddr));
 		}
 
 	}

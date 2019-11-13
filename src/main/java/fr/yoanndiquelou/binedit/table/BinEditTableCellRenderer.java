@@ -1,14 +1,18 @@
 package fr.yoanndiquelou.binedit.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
@@ -17,19 +21,43 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 	 * 
 	 */
 	private static final long serialVersionUID = 3334898686602771898L;
+	/** Bordure de selection. */
+	private Border mSelectedBorder;
+	/** Bordure de delimitation. */
+	private Border mLimitBorder;
+	/** Bordure par defaut. */
+	private Border mDefaultBorder;
+
+	public BinEditTableCellRenderer() {
+		mSelectedBorder = BorderFactory.createCompoundBorder();
+		mLimitBorder = BorderFactory.createCompoundBorder();
+		mDefaultBorder = BorderFactory.createEmptyBorder();
+
+		mSelectedBorder = BorderFactory.createCompoundBorder(mSelectedBorder,
+				BorderFactory.createMatteBorder(2, 2, 2, 2, UIManager.getColor("Selection.background")));
+
+		mLimitBorder = BorderFactory.createCompoundBorder(mLimitBorder,
+				BorderFactory.createMatteBorder(0, 0, 0, 2, Color.cyan));
+	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
+		JComponent cell = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+				column);
+		setHorizontalAlignment(JLabel.CENTER);
+		setVerticalAlignment(JLabel.CENTER);
+		if (column == 0) {
+			setHorizontalAlignment(JLabel.RIGHT);
+		}
 		Font font = UIManager.getFont("Table.font");
-
+		cell.setBorder(mDefaultBorder);
 		if (isCellSelected(table, row, column)) {
 			cell.setBackground(UIManager.getColor("Selection.background"));
-			cell.setForeground(UIManager.getColor("Selection.foreground"));
+			cell.setForeground(/* UIManager.getColor("Selection.foreground") */Color.white);
 
 			cell.setFont(font.deriveFont(Font.BOLD));
+			cell.setBorder(mSelectedBorder);
 		} else {
 			cell.setFont(font.deriveFont(Font.PLAIN));
 			if (row % 2 != 0) {
@@ -37,6 +65,10 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 			} else {
 				cell.setBackground(UIManager.getColor("Table.background"));
 			}
+			cell.setForeground(Color.black);
+		}
+		if (column == 0 || column == ((BinEditTableModel) table.getModel()).getSettings().getNbWordPerLine()) {
+			cell.setBorder(mLimitBorder);
 		}
 		return cell;
 	}

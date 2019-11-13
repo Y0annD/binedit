@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -22,6 +23,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import fr.yoanndiquelou.binedit.frame.ViewerSettingsFrame;
+import fr.yoanndiquelou.binedit.model.ViewerSettings;
 import fr.yoanndiquelou.binedit.table.BinEditTableCellRenderer;
 import fr.yoanndiquelou.binedit.table.BinEditTableModel;
 
@@ -49,11 +52,14 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	private long mMinSelectionAddr;
 	/** Addresse de fin de la selection. */
 	private long mMaxSelectionAddr;
+	/** Preferences. */
+	private Preferences mPrefs;
 
 	public BinaryViewer(File file) {
 		addJMenuBar();
+		mPrefs = Preferences.userRoot().node(this.getClass().getName());
 		mFile = file;
-		mSettings = new ViewerSettings();
+		mSettings = new ViewerSettings(mPrefs);
 		setName(String.format("BinaryViewer_%s/%s", mFile.getParentFile().getName(), mFile.getName()));
 		setTitle(file.getName());
 		setClosable(true);
@@ -98,13 +104,14 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		setVisible(true);
 		pack();
 
-		mSettings.addPropertyChangeListener((l) -> {
+		mSettings.addPropertyChangeListener(l -> {
 			mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
 			mTable.getColumnModel().getSelectionModel().removeListSelectionListener(BinaryViewer.this);
 			mModel.fireTableStructureChanged();
 			updateTableConstraints();
 
 			updateSelection();
+			mInfoPanel.setShift(mSettings.getShift());
 			mTable.repaint();
 			mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
 			mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
@@ -187,7 +194,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 //			if (mTable.getSelectedColumn() > ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine()) {
 //				addr -= ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine();
 //			}
-			mInfoPanel.setAddr(mMinSelectionAddr, mMaxSelectionAddr);
+			mInfoPanel.setAddr(mMinSelectionAddr + mSettings.getShift(), mMaxSelectionAddr + mSettings.getShift());
 		}
 	}
 

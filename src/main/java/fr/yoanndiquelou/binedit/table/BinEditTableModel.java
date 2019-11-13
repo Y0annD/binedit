@@ -1,8 +1,11 @@
 package fr.yoanndiquelou.binedit.table;
 
+import java.util.Locale;
+
 import javax.swing.table.AbstractTableModel;
 
-import fr.yoanndiquelou.binedit.panel.ViewerSettings;
+import fr.yoanndiquelou.binedit.model.ViewerSettings;
+import fr.yoanndiquelou.binedit.utils.AddressUtils;
 
 public class BinEditTableModel extends AbstractTableModel {
 
@@ -30,7 +33,7 @@ public class BinEditTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2 * mSettings.getNbWordPerLine()+1;
+		return 2 * mSettings.getNbWordPerLine() + 1;
 	}
 
 	@Override
@@ -45,16 +48,21 @@ public class BinEditTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		String result;
-		if (columnIndex > mSettings.getNbWordPerLine() ) {
-			byte[] content = new byte[1];
-			content[0] = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - mSettings.getNbWordPerLine()
-					 - 1];
-			result = new String(content).replace("\n", ".").replace(" ", ".");
-		} else if (columnIndex > 0) {
-			result = String.format("%02x", mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1])
-					.toUpperCase();
+		if (isValidAddress(rowIndex, columnIndex)) {
+			if (columnIndex > mSettings.getNbWordPerLine()) {
+				byte[] content = new byte[1];
+				content[0] = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex
+						- mSettings.getNbWordPerLine() - 1 + mSettings.getShift()];
+				result = new String(content).replace("\n", ".").replace(" ", ".");
+			} else if (columnIndex > 0) {
+				result = String.format("%02x",
+						mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1 + mSettings.getShift()])
+						.toUpperCase();
+			} else {
+				result = getAddress(rowIndex, columnIndex);
+			}
 		} else {
-			result = getAddress(rowIndex, columnIndex);
+			result = "00";
 		}
 		return result;
 	}
@@ -68,11 +76,40 @@ public class BinEditTableModel extends AbstractTableModel {
 	 */
 	private String getAddress(int rowIndex, int columnIndex) {
 		int maxChar = mMaxAddrStr.length();
-		String result = String.format("%02x", rowIndex * mSettings.getNbWordPerLine() + columnIndex).toUpperCase();
-		while (result.length() < maxChar) {
-			result = "0".concat(result);
+		String result;
+		long addr = rowIndex * mSettings.getNbWordPerLine() + columnIndex + mSettings.getShift();
+		result = AddressUtils.getHexString(addr);
+
+		while ((addr >= 0 ? result.length() : result.length() - 1) < maxChar) {
+			if (addr < 0) {
+				result = "-0".concat(result.substring(1));
+			} else {
+				result = "0".concat(result);
+			}
 		}
 		return result;
+	}
+
+	/**
+	 * The address at the specified coordinates is valid?
+	 * 
+	 * @param rowIndex    row index in table
+	 * @param columnIndex column index in table
+	 * @return true if valid.
+	 */
+	private boolean isValidAddress(int rowIndex, int columnIndex) {
+		try {
+			if (columnIndex == 0)
+				return true;
+			if (columnIndex > mSettings.getNbWordPerLine()) {
+				columnIndex -= mSettings.getNbWordPerLine();
+			}
+			byte a = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1 + mSettings.getShift()];
+			return true;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
+		}
+
 	}
 
 	/**

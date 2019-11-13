@@ -12,7 +12,6 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import fr.yoanndiquelou.binedit.AppController;
-import fr.yoanndiquelou.binedit.panel.ViewerSettingsFrame;
 
 /**
  * Main frame menu.
@@ -41,7 +40,9 @@ public class FrameMenu extends JMenuBar {
 		// ------ File menu
 		JMenuItem exitItem = new JMenuItem(mBundle.getString("menu.file.exit"));
 		// on event exit the app
-		exitItem.addActionListener(e -> System.exit(0));
+		exitItem.addActionListener(e -> {
+			System.exit(0);
+		});
 		JMenuItem openItem = new JMenuItem(mBundle.getString("menu.file.open"));
 
 		openItem.addActionListener(l -> {
