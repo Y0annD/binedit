@@ -74,7 +74,7 @@ public class InfoPanel extends JPanel {
 		if (minAddr.equals(maxAddr)) {
 			mAddrLabel.setText(minAddr);
 		} else {
-			mAddrLabel.setText(String.format("[0x%s;0x%s]", minAddr, maxAddr));
+			mAddrLabel.setText(String.format("[%s;%s]", minAddr, maxAddr));
 		}
 
 	}

@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -48,10 +50,6 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	private JTable mTable;
 	/** Panel d'information. */
 	private InfoPanel mInfoPanel;
-	/** Addresse de depart de la selection. */
-	private long mMinSelectionAddr;
-	/** Addresse de fin de la selection. */
-	private long mMaxSelectionAddr;
 	/** Preferences. */
 	private Preferences mPrefs;
 
@@ -119,10 +117,10 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	}
 
 	public void updateSelection() {
-		long minRow = mMinSelectionAddr / mSettings.getNbWordPerLine();
-		long maxRow = mMaxSelectionAddr / mSettings.getNbWordPerLine();
-		long minColumn = mMinSelectionAddr - minRow * mSettings.getNbWordPerLine() + 1;
-		long maxColumn = mMaxSelectionAddr - maxRow * mSettings.getNbWordPerLine() + 1;
+		long minRow = mModel.getMinSelectionAddr() / mSettings.getNbWordPerLine();
+		long maxRow = mModel.getMaxSelectionAddr() / mSettings.getNbWordPerLine();
+		long minColumn = mModel.getMinSelectionAddr() - minRow * mSettings.getNbWordPerLine() + 1;
+		long maxColumn = mModel.getMaxSelectionAddr() - maxRow * mSettings.getNbWordPerLine() + 1;
 		mTable.getSelectionModel().addSelectionInterval((int) minRow, (int) maxRow);
 		mTable.getColumnModel().getSelectionModel().addSelectionInterval((int) minColumn, (int) maxColumn);
 
@@ -174,27 +172,68 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 */
 	public void valueChanged(ListSelectionEvent le) {
 		if (null != mTable) {
-			mMinSelectionAddr = mTable.getSelectionModel().getMinSelectionIndex() * mSettings.getNbWordPerLine();
-			mMaxSelectionAddr = mTable.getSelectionModel().getMaxSelectionIndex() * mSettings.getNbWordPerLine();
-			long minColumn = mTable.getColumnModel().getSelectionModel().getMinSelectionIndex() - 1;
-			long maxColumn = mTable.getColumnModel().getSelectionModel().getMaxSelectionIndex() - 1;
+			long minSelectionAddr;
+			long maxSelectionAddr;
+			long anchorRow = mTable.getSelectionModel().getAnchorSelectionIndex();
+			long anchorColumn = mTable.getColumnModel().getSelectionModel().getAnchorSelectionIndex() - 1;
+			if(anchorColumn>mSettings.getNbWordPerLine()) {
+				anchorColumn-=mSettings.getNbWordPerLine();
+			}
+			long minRow;
+			long maxRow;
+			long minColumn;
+			long maxColumn;
 
-			mMinSelectionAddr += minColumn;
-			mMaxSelectionAddr += maxColumn;
+
+			minRow = mTable.getSelectionModel().getMinSelectionIndex();
+			maxRow = mTable.getSelectionModel().getMaxSelectionIndex();
+			minColumn = mTable.getColumnModel().getSelectionModel().getMinSelectionIndex() - 1;
+			maxColumn = mTable.getColumnModel().getSelectionModel().getMaxSelectionIndex() - 1;
 			if (minColumn > mSettings.getNbWordPerLine()) {
-				mMinSelectionAddr -= mSettings.getNbWordPerLine();
+				minColumn -= mSettings.getNbWordPerLine();
 			}
 			if (maxColumn > mSettings.getNbWordPerLine()) {
-				mMaxSelectionAddr -= mSettings.getNbWordPerLine();
+				maxColumn -= mSettings.getNbWordPerLine();
 			}
+			minSelectionAddr = minRow * mSettings.getNbWordPerLine();
+			maxSelectionAddr = maxRow * mSettings.getNbWordPerLine();
+
+			if (minRow == maxRow) {
+				if (minColumn == anchorColumn) {
+					maxSelectionAddr += maxColumn;
+					minSelectionAddr += minColumn;
+				} else {
+					maxSelectionAddr += minColumn;
+					minSelectionAddr += maxColumn;
+				}
+
+			} else if (minColumn == anchorColumn) {
+				if (minRow >= anchorRow) {
+					maxSelectionAddr += maxColumn;
+					minSelectionAddr += minColumn;
+				} else {
+					maxSelectionAddr += minColumn;
+					minSelectionAddr += maxColumn;
+				}
+			} else {
+				if (minRow >= anchorRow) {
+					minSelectionAddr += maxColumn;
+					maxSelectionAddr += minColumn;
+				} else {
+					minSelectionAddr += minColumn;
+					maxSelectionAddr += maxColumn;
+				}
+			}
+			if (minSelectionAddr > maxSelectionAddr) {
+				long tmp = minSelectionAddr;
+				minSelectionAddr = maxSelectionAddr;
+				maxSelectionAddr = tmp;
+			}
+			mModel.updateSelection(minSelectionAddr, maxSelectionAddr);
+			mInfoPanel.setAddr(minSelectionAddr + mSettings.getShift(), maxSelectionAddr + mSettings.getShift());
+
 			mTable.repaint();
-//			long addr = mTable.getSelectedRow()
-//					* ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine();
-//			addr += mTable.getSelectedColumn() - 1;
-//			if (mTable.getSelectedColumn() > ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine()) {
-//				addr -= ((BinEditTableModel) mTable.getModel()).getSettings().getNbWordPerLine();
-//			}
-			mInfoPanel.setAddr(mMinSelectionAddr + mSettings.getShift(), mMaxSelectionAddr + mSettings.getShift());
+
 		}
 	}
 

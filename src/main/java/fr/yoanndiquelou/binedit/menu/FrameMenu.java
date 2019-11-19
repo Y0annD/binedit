@@ -29,7 +29,7 @@ public class FrameMenu extends JMenuBar {
 	private JFileChooser mFileChooser;
 
 	/** Resources bundle for i18n. */
-	private ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
+	private transient ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
 
 	public FrameMenu() {
 		mFileChooser = new JFileChooser();

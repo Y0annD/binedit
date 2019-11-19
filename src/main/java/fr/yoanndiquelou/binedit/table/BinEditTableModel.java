@@ -19,11 +19,16 @@ public class BinEditTableModel extends AbstractTableModel {
 	public final ViewerSettings mSettings;
 	/** adresse maximum sous forme de chaine de caractere. */
 	public final String mMaxAddrStr;
+	/** minAddrSelection. */
+	private long mMinAddr;
+	/** maxAddrSelection. */
+	private long mMaxAddr;
 
 	public BinEditTableModel(byte[] content, ViewerSettings settings) {
 		mContent = content;
 		mSettings = settings;
 		mMaxAddrStr = String.format("%02x", content.length);
+		mMinAddr = mMaxAddr = 0;
 	}
 
 	@Override
@@ -119,5 +124,34 @@ public class BinEditTableModel extends AbstractTableModel {
 	 */
 	public ViewerSettings getSettings() {
 		return mSettings;
+	}
+
+	/**
+	 * Update selection addresses.
+	 * 
+	 * @param minAddr min selection address
+	 * @param maxAddr max selection address
+	 */
+	public void updateSelection(long minAddr, long maxAddr) {
+		mMinAddr = minAddr;
+		mMaxAddr = maxAddr;
+	}
+
+	/**
+	 * Get the minimum selection address.
+	 * 
+	 * @return min addr selection
+	 */
+	public long getMinSelectionAddr() {
+		return mMinAddr;
+	}
+
+	/**
+	 * Get the maximum selection address.
+	 * 
+	 * @return max addr selection
+	 */
+	public long getMaxSelectionAddr() {
+		return mMaxAddr;
 	}
 }

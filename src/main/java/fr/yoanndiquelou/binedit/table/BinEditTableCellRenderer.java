@@ -15,6 +15,12 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/**
+ * Cell renderer pour sélection d'addresses continues.
+ * 
+ * @author yoann
+ *
+ */
 public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 
 	/**
@@ -22,11 +28,11 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 	 */
 	private static final long serialVersionUID = 3334898686602771898L;
 	/** Bordure de selection. */
-	private Border mSelectedBorder;
+	private transient Border mSelectedBorder;
 	/** Bordure de delimitation. */
-	private Border mLimitBorder;
+	private transient Border mLimitBorder;
 	/** Bordure par defaut. */
-	private Border mDefaultBorder;
+	private transient Border mDefaultBorder;
 
 	public BinEditTableCellRenderer() {
 		mSelectedBorder = BorderFactory.createCompoundBorder();
@@ -77,39 +83,43 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		boolean selected = false;
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
 
-		List<Integer> selectedColumns = Arrays.stream(table.getSelectedColumns()).boxed().collect(Collectors.toList());
-		List<Integer> selectedRows = Arrays.stream(table.getSelectedRows()).boxed().collect(Collectors.toList());
-
-		if (selectedRows.size() > 1 && column != 0) {
+		if (model.getMaxSelectionAddr() / model.getSettings().getNbWordPerLine() != model.getMinSelectionAddr()
+				/ model.getSettings().getNbWordPerLine() && column != 0) {
 			// Cas ou l'on à plusieurs lignes selectionnées
-			int maxRows = selectedRows.get(selectedRows.size() - 1);
-			int minRows = selectedRows.get(0);
+			long maxRows = model.getMaxSelectionAddr() / model.getSettings().getNbWordPerLine();
+			long minRows = model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine();
+			long minColumn = model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine() + 1;
+			long maxColumn = model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine() + 1;
 			if (row > minRows && row < maxRows) {
 				selected = true;
 			} else if (row == minRows) {
 				if (column <= model.getSettings().getNbWordPerLine()) {
-					selected = column >= selectedColumns.get(0);
+					selected = column >= minColumn;
 				} else {
-					selected = column - model.getSettings().getNbWordPerLine() >= selectedColumns.get(0);
+					selected = column - model.getSettings().getNbWordPerLine() >= minColumn;
 				}
 			} else if (row == maxRows) {
 				if (column <= model.getSettings().getNbWordPerLine()) {
-					selected = column <= selectedColumns.get(selectedColumns.size() - 1);
+					selected = column <= maxColumn;
 				} else {
-					selected = column - model.getSettings().getNbWordPerLine() <= selectedColumns
-							.get(selectedColumns.size() - 1);
+					selected = column - model.getSettings().getNbWordPerLine() <= maxColumn;
 				}
 
 			}
-		} else if (!selectedColumns.isEmpty() && !selectedRows.isEmpty() && column != 0) {
+		} else if (column != 0) {
 			if (column <= model.getSettings().getNbWordPerLine()) {
-				selected = selectedRows.contains(row) && (selectedColumns.contains(column)
-						|| selectedColumns.contains(column + model.getSettings().getNbWordPerLine()));
+				selected = (row == model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine()
+						&& column - 1 <= model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine()
+						&& column - 1 >= model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine());
 			} else {
-				selected = selectedRows.contains(row) && (selectedColumns.contains(column)
-						|| selectedColumns.contains(column - model.getSettings().getNbWordPerLine()));
+				selected = (row == model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine()
+						&& column - 1 - model.getSettings().getNbWordPerLine() <= model.getMaxSelectionAddr()
+								% model.getSettings().getNbWordPerLine()
+						&& column - 1 - model.getSettings().getNbWordPerLine() >= model.getMinSelectionAddr()
+								% model.getSettings().getNbWordPerLine());
 			}
 		}
 		return selected;
 	}
+
 }
