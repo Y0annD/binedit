@@ -4,11 +4,20 @@ import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public final class BinEditLookAndFeelCustomizer {
 
 	
 	public static final void customize() {
+		try {
+			UIManager.setLookAndFeel(NimbusLookAndFeel.class.getName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		UIDefaults uidefaults = super.getDefaults();
 //		UIManager.put("EditorPaneUI", BEEditorPaneUI.class.getName());
 		UIManager.put("Table.font", new Font("Courier", Font.PLAIN, 12));

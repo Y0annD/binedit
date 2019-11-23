@@ -1,13 +1,16 @@
 package fr.yoanndiquelou.binedit.table;
 
-import java.util.Locale;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.table.AbstractTableModel;
 
+import fr.yoanndiquelou.binedit.Settings;
+import fr.yoanndiquelou.binedit.model.DisplayMode;
 import fr.yoanndiquelou.binedit.model.ViewerSettings;
 import fr.yoanndiquelou.binedit.utils.AddressUtils;
 
-public class BinEditTableModel extends AbstractTableModel {
+public class BinEditTableModel extends AbstractTableModel implements PropertyChangeListener {
 
 	/**
 	 * 
@@ -23,12 +26,17 @@ public class BinEditTableModel extends AbstractTableModel {
 	private long mMinAddr;
 	/** maxAddrSelection. */
 	private long mMaxAddr;
+	/** Mode d'affichage. */
+	private DisplayMode mDisplayMode;
 
 	public BinEditTableModel(byte[] content, ViewerSettings settings) {
+		super();
+		mDisplayMode = Settings.getDisplayMode();
 		mContent = content;
 		mSettings = settings;
 		mMaxAddrStr = String.format("%02x", content.length);
 		mMinAddr = mMaxAddr = 0;
+		Settings.addSettingsChangeListener(this);
 	}
 
 	@Override
@@ -38,7 +46,7 @@ public class BinEditTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2 * mSettings.getNbWordPerLine() + 1;
+		return (mDisplayMode.displayChar() ? 2 : 1) * mSettings.getNbWordPerLine() + 1;
 	}
 
 	@Override
@@ -153,5 +161,18 @@ public class BinEditTableModel extends AbstractTableModel {
 	 */
 	public long getMaxSelectionAddr() {
 		return mMaxAddr;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (Settings.DISPLAY_MODE_EVENT.equals(evt.getPropertyName())) {
+			mDisplayMode = (DisplayMode) evt.getNewValue();
+			if (mDisplayMode.displayChar() != ((DisplayMode) evt.getOldValue()).displayChar()) {
+				fireTableStructureChanged();
+			}
+		} else if (Settings.WORD_PER_LINE.equals(evt.getPropertyName())) {
+			mSettings.setNbWordPerline((int) evt.getNewValue());
+		}
+
 	}
 }

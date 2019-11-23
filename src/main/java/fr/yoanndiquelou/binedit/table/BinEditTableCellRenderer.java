@@ -3,9 +3,8 @@ package fr.yoanndiquelou.binedit.table;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -15,13 +14,16 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import fr.yoanndiquelou.binedit.Settings;
+import fr.yoanndiquelou.binedit.model.DisplayMode;
+
 /**
  * Cell renderer pour sélection d'addresses continues.
  * 
  * @author yoann
  *
  */
-public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
+public class BinEditTableCellRenderer extends DefaultTableCellRenderer{
 
 	/**
 	 * 
@@ -33,6 +35,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 	private transient Border mLimitBorder;
 	/** Bordure par defaut. */
 	private transient Border mDefaultBorder;
+	
 
 	public BinEditTableCellRenderer() {
 		mSelectedBorder = BorderFactory.createCompoundBorder();
@@ -121,5 +124,4 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		}
 		return selected;
 	}
-
 }
