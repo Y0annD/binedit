@@ -34,14 +34,14 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 		mDisplayMode = Settings.getDisplayMode();
 		mContent = content;
 		mSettings = settings;
-		mMaxAddrStr = String.format("%02x", content.length);
+		mMaxAddrStr = String.format("%02x", content.length - 1);
 		mMinAddr = mMaxAddr = 0;
 		Settings.addSettingsChangeListener(this);
 	}
 
 	@Override
 	public int getRowCount() {
-		return (int) Math.floor(mContent.length / (double) mSettings.getNbWordPerLine());
+		return (int) Math.ceil(mContent.length / (double) mSettings.getNbWordPerLine());
 	}
 
 	@Override
@@ -75,7 +75,11 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 				result = getAddress(rowIndex, columnIndex);
 			}
 		} else {
-			result = "00";
+			if (columnIndex > mSettings.getNbWordPerLine()) {
+				result = new String(new byte[] { 0 }).replace("\n", ".").replace(" ", ".");
+			} else {
+				result = String.format("%02x", 0).toUpperCase();
+			}
 		}
 		return result;
 	}
