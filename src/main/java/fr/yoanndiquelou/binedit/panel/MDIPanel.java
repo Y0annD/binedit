@@ -25,6 +25,7 @@ public class MDIPanel extends JDesktopPane {
 			BinaryViewer viewer = new BinaryViewer(file);
 			mViewers.add(viewer);
 			add(viewer);
+			viewer.toFront();
 		});
 	}
 
