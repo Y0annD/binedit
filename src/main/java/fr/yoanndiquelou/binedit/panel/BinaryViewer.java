@@ -3,16 +3,14 @@ package fr.yoanndiquelou.binedit.panel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -69,8 +67,13 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		setClosable(true);
 		setResizable(true);
 		setIconifiable(true);
-		try {
-			mContent = Files.readAllBytes(mFile.toPath());
+		
+		try(RandomAccessFile raf = new RandomAccessFile(mFile, "r")) {
+			ByteBuffer buffer = ByteBuffer.allocate((int)Math.min(1024*1024, raf.getChannel().size()));
+			raf.getChannel().read(buffer);
+			buffer.flip();
+			mContent=buffer.array();
+//			mContent = Files.readAllBytes(mFile.toPath());
 		} catch (IOException e) {
 			e.printStackTrace();
 			mContent = new byte[0];
@@ -159,14 +162,13 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		long maxColumn = mModel.getMaxSelectionAddr() - maxRow * mSettings.getNbWordPerLine() + 1;
 		mTable.getSelectionModel().addSelectionInterval((int) minRow, (int) maxRow);
 		mTable.getColumnModel().getSelectionModel().addSelectionInterval((int) minColumn, (int) maxColumn);
-
 	}
 
 	public void updateTableConstraints() {
 		TableColumn column = null;
 		int maxWidth = 0;
 		int width;
-		Font font = new Font("Courier", Font.PLAIN, 12);
+		Font font = new Font("Courier", Font.PLAIN, 13);
 		JLabel c = new JLabel();
 		c.setFont(font);
 		for (int i = 0; i < mTable.getColumnModel().getColumnCount(); i++) {

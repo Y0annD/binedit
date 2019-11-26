@@ -60,26 +60,24 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		String result;
+		int result;
 		if (isValidAddress(rowIndex, columnIndex)) {
 			if (columnIndex > mSettings.getNbWordPerLine()) {
-				byte[] content = new byte[1];
-				content[0] = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex
-						- mSettings.getNbWordPerLine() - 1 + mSettings.getShift()];
-				result = new String(content).replace("\n", ".").replace(" ", ".");
+//			byte[] content = new byte[1];
+				result = mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - mSettings.getNbWordPerLine()
+						- 1 + mSettings.getShift()];
+//			result = new String(content).replace("\n", ".").replace(" ", ".");
 			} else if (columnIndex > 0) {
-				result = String.format("%02x",
-						mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1 + mSettings.getShift()])
-						.toUpperCase();
+				result = /* String.format("%02x", */
+						mContent[rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1
+								+ mSettings.getShift()];/*
+														 * ) .toUpperCase();
+														 */
 			} else {
-				result = getAddress(rowIndex, columnIndex);
+				result = getAddress(rowIndex, columnIndex)+1;
 			}
 		} else {
-			if (columnIndex > mSettings.getNbWordPerLine()) {
-				result = new String(new byte[] { 0 }).replace("\n", ".").replace(" ", ".");
-			} else {
-				result = String.format("%02x", 0).toUpperCase();
-			}
+			result = 0;
 		}
 		return result;
 	}
@@ -91,21 +89,25 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	 * @param columnIndex
 	 * @return
 	 */
-	private String getAddress(int rowIndex, int columnIndex) {
-		int maxChar = mMaxAddrStr.length();
-		String result;
-		long addr = rowIndex * mSettings.getNbWordPerLine() + columnIndex + mSettings.getShift();
-		result = AddressUtils.getHexString(addr);
-
-		while ((addr >= 0 ? result.length() : result.length() - 1) < maxChar) {
-			if (addr < 0) {
-				result = "-0".concat(result.substring(1));
-			} else {
-				result = "0".concat(result);
-			}
-		}
-		return result;
+	public int getAddress(int rowIndex, int columnIndex) {
+		return rowIndex * mSettings.getNbWordPerLine() + (columnIndex < mSettings.getNbWordPerLine() ? columnIndex
+				: columnIndex - mSettings.getNbWordPerLine())-1 + mSettings.getShift();
 	}
+//	private String getAddress(int rowIndex, int columnIndex) {
+//		int maxChar = mMaxAddrStr.length();
+//		String result;
+//		long addr = rowIndex * mSettings.getNbWordPerLine() + columnIndex + mSettings.getShift();
+//		result = AddressUtils.getHexString(addr);
+//
+//		while ((addr >= 0 ? result.length() : result.length() - 1) < maxChar) {
+//			if (addr < 0) {
+//				result = "-0".concat(result.substring(1));
+//			} else {
+//				result = "0".concat(result);
+//			}
+//		}
+//		return result;
+//	}
 
 	/**
 	 * The address at the specified coordinates is valid?

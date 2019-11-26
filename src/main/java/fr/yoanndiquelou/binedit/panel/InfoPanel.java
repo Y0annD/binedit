@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import fr.yoanndiquelou.binedit.Settings;
 import fr.yoanndiquelou.binedit.utils.AddressUtils;
 
 /**
@@ -69,8 +70,8 @@ public class InfoPanel extends JPanel {
 	 * @param newAddr new address
 	 */
 	public void setAddr(long newMinAddr, long newMaxAddr) {
-		String minAddr = AddressUtils.getHexString(newMinAddr);
-		String maxAddr = AddressUtils.getHexString(newMaxAddr);
+		String minAddr = AddressUtils.getHexString(newMinAddr*Settings.getDisplayMode().getBytes());
+		String maxAddr = AddressUtils.getHexString(newMaxAddr*Settings.getDisplayMode().getBytes());
 		if (minAddr.equals(maxAddr)) {
 			mAddrLabel.setText(minAddr);
 		} else {
