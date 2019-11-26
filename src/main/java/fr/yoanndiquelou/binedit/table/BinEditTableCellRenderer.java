@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -22,6 +23,8 @@ import fr.yoanndiquelou.binedit.utils.AddressUtils;
  *
  */
 public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
+	/** Resources bundle. */
+	private ResourceBundle mBundle = ResourceBundle.getBundle("fr.yoanndiquelou.binedit.table.resources.BinaryTable");
 
 	/**
 	 * 
@@ -75,9 +78,11 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		if (column == 0) {
 			setHorizontalAlignment(JLabel.RIGHT);
 		} else if (column <= model.getSettings().getNbWordPerLine()) {
-			String tooltip = "<html><b>Value</b><br/><b>Bin:</b> " + byteValue + "<br /><b>Hex: </b>0x"
-					+ String.format("%02x", byteValue).toUpperCase(Locale.getDefault())
-					+ "<hr/><b>Address</b><br/><b>Bin: </b>" + model.getAddress(row, column) + "<br/><b>Hex: </b>0x"
+			String tooltip = "<html><b>" + mBundle.getString("VALUE") + "</b><br/><b>" + mBundle.getString("BINARY")
+					+ " :</b> " + byteValue + "<br /><b>" + mBundle.getString("HEXA") + ": </b>0x"
+					+ String.format("%02x", byteValue).toUpperCase(Locale.getDefault()) + "<hr/><b>"
+					+ mBundle.getString("ADDRESS") + "</b><br/><b>" + mBundle.getString("BINARY") + " : </b>"
+					+ model.getAddress(row, column) + "<br/><b>" + mBundle.getString("HEXA") + ": </b>0x"
 					+ String.format("%02x", model.getAddress(row, column)).toUpperCase(Locale.getDefault()) + "</html>";
 			cell.setToolTipText(tooltip);
 		}
