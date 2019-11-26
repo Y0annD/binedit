@@ -15,12 +15,15 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.menu.FrameMenu;
 import fr.yoanndiquelou.binedit.model.DisplayMode;
@@ -34,19 +37,21 @@ public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 892164120910579373L;
 	/** Preferences. */
 	private Preferences mPrefs;
+	/** App controller. */
+	private AppController mController;
 
 	public MainFrame() {
 		mPrefs = Preferences.userRoot().node(getClass().getName());
 		setTitle("BinEdit");
 		setExtendedState(MAXIMIZED_BOTH);
-		AppController controller = AppController.getInstance();
+		mController = AppController.getInstance();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setJMenuBar(new FrameMenu());
 
 		JPanel explorerPanel = new ExplorerPanel();
 
-		JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, explorerPanel, controller.getMDIPanel());
+		JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, explorerPanel, mController.getMDIPanel());
 		pane.setOneTouchExpandable(true);
 		pane.setContinuousLayout(true);
 
@@ -64,8 +69,8 @@ public class MainFrame extends JFrame {
 		// Provide minimum sizes for the two components in the split pane
 		Dimension minimumSize = new Dimension(150, 50);
 		explorerPanel.setMinimumSize(minimumSize);
-		controller.getMDIPanel().setMinimumSize(minimumSize);
-		controller.getMDIPanel().setDropTarget(new DropTarget() {
+		mController.getMDIPanel().setMinimumSize(minimumSize);
+		mController.getMDIPanel().setDropTarget(new DropTarget() {
 			/**
 			 * 
 			 */
@@ -79,7 +84,7 @@ public class MainFrame extends JFrame {
 							.getTransferData(DataFlavor.javaFileListFlavor);
 					for (File file : droppedFiles) {
 						if (file.isFile()) {
-							controller.getInstance().openFile(file);
+							mController.getInstance().openFile(file);
 						}
 					}
 				} catch (Exception ex) {
@@ -112,6 +117,16 @@ public class MainFrame extends JFrame {
 	private JToolBar buildToolbar() {
 		JToolBar toolbar = new JToolBar();
 		toolbar.setName("Toolbar");
+		JButton openButton = new JButton(UIManager.getIcon("FileView.directoryIcon"));
+		openButton.addActionListener(a -> {
+			JFileChooser fc = new JFileChooser();
+			int result = fc.showOpenDialog(null);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				mController.getInstance().openFile(fc.getSelectedFile());
+			}
+		});
+		toolbar.add(openButton);
+		toolbar.add(new JToolBar.Separator());
 		ButtonGroup buttonGroup = new ButtonGroup();
 		JToggleButton displayModes[] = new JToggleButton[DisplayMode.values().length];
 		int index = 0;
