@@ -57,7 +57,13 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
 		if (column == 0) {
 			result = AddressUtils.getHexString((int) value);
-
+			while(result.length()<model.mMaxAddrStr.length()) {
+				if((int)value<0) {
+					result = "-0".concat(result.substring(1));
+				}else {
+					result = "0".concat(result);
+				}
+			}
 //			while (((int)value >= 0 ? result.length() : result.length() - 1) < maxChar) {
 //				if (addr < 0) {
 //					result = "-0".concat(result.substring(1));

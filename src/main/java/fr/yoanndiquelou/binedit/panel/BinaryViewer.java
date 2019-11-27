@@ -188,7 +188,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		for (int i = 0; i < mTable.getColumnModel().getColumnCount(); i++) {
 			column = mTable.getColumnModel().getColumn(i);
 			if (i == 0) {
-				width = SwingUtilities.computeStringWidth(c.getFontMetrics(font), mModel.mMaxAddrStr) * 2;
+				width = SwingUtilities.computeStringWidth(c.getFontMetrics(font), mModel.mMaxAddrStr);
 			} else if (i > mSettings.getNbWordPerLine()) {
 				width = 17;
 			} else {

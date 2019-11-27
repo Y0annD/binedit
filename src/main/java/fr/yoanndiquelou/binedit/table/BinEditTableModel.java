@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -52,7 +53,7 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 		mDisplayMode = Settings.getDisplayMode();
 		mSettings = settings;
 		mFileSize = size;
-		mChunkSize = (int) Math.min(DEFAULT_CHUNK_SIZE, size);
+		mChunkSize = (int) Math.min(DEFAULT_CHUNK_SIZE, mFileSize);
 		mBuffer = ByteBuffer.allocate(mChunkSize);
 		try {
 			mFile.getChannel().read(mBuffer);
@@ -62,7 +63,7 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			mContent = new byte[(int) size];
 			Arrays.fill(mContent, (byte) 0);
 		}
-		mMaxAddrStr = String.format("%02x", size - 1);
+		mMaxAddrStr = String.format("0X%02x", mFileSize - 1).toUpperCase(Locale.getDefault());
 		mMinAddr = mMaxAddr = mContentStartAddress = 0;
 		Settings.addSettingsChangeListener(this);
 	}
@@ -211,8 +212,5 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 				e.printStackTrace();
 			}
 		}
-//		else {
-//			System.out.println("All file loaded");
-//		}
 	}
 }
