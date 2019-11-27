@@ -3,6 +3,7 @@ package fr.yoanndiquelou.binedit.panel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -18,9 +19,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
@@ -40,13 +43,14 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 * serial id.
 	 */
 	private static final long serialVersionUID = -5743598459949152992L;
+	
 	/** Resources bundle for i18n. */
 	private ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
 
 	/** Viewed file. */
 	private File mFile;
-	/** file content. */
-	private byte[] mContent;
+	/** RandomAccessFile. */
+	private RandomAccessFile mRaf;
 	/** Byte per line. */
 	private ViewerSettings mSettings;
 	private BinEditTableModel mModel;
@@ -67,62 +71,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		setClosable(true);
 		setResizable(true);
 		setIconifiable(true);
-		
-		try(RandomAccessFile raf = new RandomAccessFile(mFile, "r")) {
-			ByteBuffer buffer = ByteBuffer.allocate((int)Math.min(1024*1024, raf.getChannel().size()));
-			raf.getChannel().read(buffer);
-			buffer.flip();
-			mContent=buffer.array();
-//			mContent = Files.readAllBytes(mFile.toPath());
-		} catch (IOException e) {
-			e.printStackTrace();
-			mContent = new byte[0];
-		}
 
-		mModel = new BinEditTableModel(mContent, mSettings);
-		TableCellRenderer renderer = new BinEditTableCellRenderer();
-		mTable = new JTable(mModel);
-		mTable.setFillsViewportHeight(true);
-		mTable.setRowSelectionAllowed(true);
-		mTable.setColumnSelectionAllowed(true);
-		mTable.setCellSelectionEnabled(true);
-		mTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		mTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		mTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		mTable.setTableHeader(null);
-		mTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		mTable.setDefaultRenderer(Object.class, renderer);
-		mTable.getColumnModel().getSelectionModel().addListSelectionListener(this);
-		mTable.getSelectionModel().addListSelectionListener(this);
-		mTable.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
-			
-			@Override
-			public void columnSelectionChanged(ListSelectionEvent e) {
-				 updateTableConstraints();
-			}
-			
-			@Override
-			public void columnRemoved(TableColumnModelEvent e) {
-				updateTableConstraints();
-			}
-			
-			@Override
-			public void columnMoved(TableColumnModelEvent e) {
-				updateTableConstraints();
-			}
-			
-			@Override
-			public void columnMarginChanged(ChangeEvent e) {
-				updateTableConstraints();
-			}
-			
-			@Override
-			public void columnAdded(TableColumnModelEvent e) {
-				updateTableConstraints();				
-			}
-		});
-		updateTableConstraints();
-		JScrollPane scroll = new JScrollPane(mTable);
 		BasicFileAttributes attr;
 		long size;
 		try {
@@ -131,29 +80,94 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		} catch (IOException e) {
 			size = 0;
 		}
-		getContentPane().add(scroll, BorderLayout.CENTER);
-		mInfoPanel = new InfoPanel(size);
-		getContentPane().add(mInfoPanel, BorderLayout.SOUTH);
+		try {
+		mRaf = new RandomAccessFile(mFile, "r");
+//			mContent = Files.readAllBytes(mFile.toPath());
 
-		setVisible(true);
-		pack();
+			mModel = new BinEditTableModel(mRaf, size, mSettings);
+			TableCellRenderer renderer = new BinEditTableCellRenderer();
+			mTable = new JTable(mModel);
+			mTable.setFillsViewportHeight(true);
+			mTable.setRowSelectionAllowed(true);
+			mTable.setColumnSelectionAllowed(true);
+			mTable.setCellSelectionEnabled(true);
+			mTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			mTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			mTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			mTable.setTableHeader(null);
+			mTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			mTable.setDefaultRenderer(Object.class, renderer);
+			mTable.getColumnModel().getSelectionModel().addListSelectionListener(this);
+			mTable.getSelectionModel().addListSelectionListener(this);
+			mTable.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 
-		mSettings.addPropertyChangeListener(l -> {
-			mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
-			mTable.getColumnModel().getSelectionModel().removeListSelectionListener(BinaryViewer.this);
-			mModel.fireTableStructureChanged();
+				@Override
+				public void columnSelectionChanged(ListSelectionEvent e) {
+					updateTableConstraints();
+				}
+
+				@Override
+				public void columnRemoved(TableColumnModelEvent e) {
+					updateTableConstraints();
+				}
+
+				@Override
+				public void columnMoved(TableColumnModelEvent e) {
+					updateTableConstraints();
+				}
+
+				@Override
+				public void columnMarginChanged(ChangeEvent e) {
+					updateTableConstraints();
+				}
+
+				@Override
+				public void columnAdded(TableColumnModelEvent e) {
+					updateTableConstraints();
+				}
+			});
+
 			updateTableConstraints();
+			JScrollPane scroll = new JScrollPane(mTable);
+			scroll.getViewport().addChangeListener(new ChangeListener() {
 
-			updateSelection();
-			mInfoPanel.setShift(mSettings.getShift());
-			mTable.repaint();
-			mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
-			mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
-		});
-		mModel.addTableModelListener(l -> {
-			updateTableConstraints();
-		});
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					int rowHeight = mTable.getRowHeight();
+					Point pos = scroll.getViewport().getViewPosition();
+					int row = (int) (pos.getY() / rowHeight);
+					mModel.updateViewPort(row);
+				}
+			});
+
+			getContentPane().add(scroll, BorderLayout.CENTER);
+			mInfoPanel = new InfoPanel(size);
+			getContentPane().add(mInfoPanel, BorderLayout.SOUTH);
+
+			setVisible(true);
+			pack();
+
+			mSettings.addPropertyChangeListener(l -> {
+				mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
+				mTable.getColumnModel().getSelectionModel().removeListSelectionListener(BinaryViewer.this);
+				mModel.fireTableStructureChanged();
+				updateTableConstraints();
+
+				updateSelection();
+				mInfoPanel.setShift(mSettings.getShift());
+				mTable.repaint();
+				mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
+				mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
+			});
+			mModel.addTableModelListener(l -> {
+				updateTableConstraints();
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+	
+	
 
 	public void updateSelection() {
 		long minRow = mModel.getMinSelectionAddr() / mSettings.getNbWordPerLine();
@@ -277,6 +291,12 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	@Override
 	public void dispose() {
 		Settings.removePropertyChangeListener(mModel);
+		try {
+			mRaf.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		super.dispose();
 	}
 
