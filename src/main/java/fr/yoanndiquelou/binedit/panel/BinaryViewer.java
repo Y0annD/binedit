@@ -4,10 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ResourceBundle;
@@ -19,9 +20,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -43,7 +44,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 * serial id.
 	 */
 	private static final long serialVersionUID = -5743598459949152992L;
-	
+
 	/** Resources bundle for i18n. */
 	private ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
 
@@ -81,7 +82,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			size = 0;
 		}
 		try {
-		mRaf = new RandomAccessFile(mFile, "r");
+			mRaf = new RandomAccessFile(mFile, "r");
 //			mContent = Files.readAllBytes(mFile.toPath());
 
 			mModel = new BinEditTableModel(mRaf, size, mSettings);
@@ -129,6 +130,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 
 			updateTableConstraints();
 			JScrollPane scroll = new JScrollPane(mTable);
+			scroll.getViewport().addChangeListener(new DelayedChangeHandler(scroll));
 			scroll.getViewport().addChangeListener(new ChangeListener() {
 
 				@Override
@@ -166,8 +168,6 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 	public void updateSelection() {
 		long minRow = mModel.getMinSelectionAddr() / mSettings.getNbWordPerLine();
@@ -300,4 +300,35 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		super.dispose();
 	}
 
+	public class DelayedChangeHandler implements ChangeListener {
+
+		private Timer timer;
+		private ChangeEvent last;
+		private JScrollPane mScroll;
+
+		public DelayedChangeHandler(JScrollPane scroll) {
+			mScroll = scroll;
+			timer = new Timer(250, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					stableStateChanged();
+				}
+			});
+			timer.setRepeats(false);
+		}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			last = e;
+			timer.restart();
+		}
+
+		protected void stableStateChanged() {
+			int rowHeight = mTable.getRowHeight();
+			Point pos = mScroll.getViewport().getViewPosition();
+			int row = (int) (pos.getY() / rowHeight);
+			mModel.updateViewPort(row);
+		}
+
+	}
 }
