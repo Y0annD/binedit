@@ -200,6 +200,9 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			} else {
 				startAddress = Math.max(0, (long) (mContentStartAddress - 0.5 * mChunkSize));
 			}
+			if(startAddress%mSettings.getNbWordPerLine()!=0) {
+				startAddress=startAddress-startAddress%mSettings.getNbWordPerLine();
+			}
 			try {
 				mBuffer.clear();
 				Arrays.fill(mContent, (byte)0);
