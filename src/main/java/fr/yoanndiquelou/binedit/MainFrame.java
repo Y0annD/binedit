@@ -6,6 +6,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -34,6 +36,8 @@ public class MainFrame extends JFrame {
 	private Preferences mPrefs;
 	/** App controller. */
 	private AppController mController;
+	/** Toolbar. */
+	private JToolBar mToolbar;
 
 	public MainFrame() {
 		mPrefs = Preferences.userRoot().node(getClass().getName());
@@ -76,16 +80,17 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		add(buildToolbar(), BorderLayout.NORTH);
+		buildToolbar();
+		add(mToolbar, BorderLayout.NORTH);
 		add(pane);
 		setVisible(true);
 		pack();
 
 	}
 
-	private JToolBar buildToolbar() {
-		JToolBar toolbar = new JToolBar();
-		toolbar.setName("Toolbar");
+	private void buildToolbar() {
+		mToolbar = new JToolBar();
+		mToolbar.setName("Toolbar");
 		JButton openButton = new JButton(UIManager.getIcon("FileView.directoryIcon"));
 		openButton.addActionListener(a -> {
 			JFileChooser fc = new JFileChooser();
@@ -94,8 +99,8 @@ public class MainFrame extends JFrame {
 				mController.getInstance().openFile(fc.getSelectedFile());
 			}
 		});
-		toolbar.add(openButton);
-		toolbar.add(new JToolBar.Separator());
+		mToolbar.add(openButton);
+		mToolbar.add(new JToolBar.Separator());
 		ButtonGroup buttonGroup = new ButtonGroup();
 		JToggleButton displayModes[] = new JToggleButton[DisplayMode.values().length];
 		int index = 0;
@@ -113,9 +118,19 @@ public class MainFrame extends JFrame {
 				}
 			});
 
-			toolbar.add(btn);
+			mToolbar.add(btn);
 		}
-		return toolbar;
+		mToolbar.setVisible(Settings.getDisplayToolbar());
+		Settings.addSettingsChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(Settings.DISPLAY_TOOLBAR.equals(evt.getPropertyName())) {
+					mToolbar.setVisible((boolean)evt.getNewValue());
+				}
+				
+			}
+		});
 	}
 
 }

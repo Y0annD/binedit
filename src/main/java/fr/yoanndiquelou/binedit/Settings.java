@@ -15,6 +15,8 @@ public class Settings {
 	public static final String WORD_PER_LINE = "WORD_PER_LINE";
 	public static final String DISPLAY_CHAR = "DISPLAY_CHAR";
 	public static final String NB_BYTES = "NB_BYTES";
+	/** Display toolbar. */
+	public static final String DISPLAY_TOOLBAR = "DISPLAY_TOOLBAR";
 
 	private static final Preferences mPrefs = Preferences.userRoot().node(Settings.class.getName());
 
@@ -87,6 +89,23 @@ public class Settings {
 				}
 			}
 		}
+	}
+
+	public static void setDisplayToolbar(boolean display) {
+		boolean oldValue = getDisplayToolbar();
+		if(oldValue != display) {
+			mPrefs.putBoolean(DISPLAY_TOOLBAR, display);
+			for(PropertyChangeListener listener: mListeners) {
+				if(null != mListeners) {
+					listener.propertyChange(new PropertyChangeEvent(display, DISPLAY_TOOLBAR, oldValue, display));
+				}
+			}
+		}
+
+	}
+
+	public static boolean getDisplayToolbar() {
+		return mPrefs.getBoolean(DISPLAY_TOOLBAR, true);
 	}
 
 	/**

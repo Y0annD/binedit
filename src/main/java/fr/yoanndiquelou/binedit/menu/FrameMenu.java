@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -13,6 +14,7 @@ import javax.swing.KeyStroke;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.command.GotoCommand;
+import fr.yoanndiquelou.binedit.menu.action.DisplayToolbarAction;
 
 /**
  * Main frame menu.
@@ -35,7 +37,7 @@ public class FrameMenu extends JMenuBar {
 	public FrameMenu() {
 		mFileChooser = new JFileChooser();
 		JMenu fileMenu = new JMenu(mBundle.getString("menu.file"));
-		JMenu displayMenu = new JMenu(mBundle.getString("menu.display"));
+
 		JMenu aboutMenu = new JMenu(mBundle.getString("menu.about"));
 
 		// ------ File menu
@@ -67,18 +69,31 @@ public class FrameMenu extends JMenuBar {
 //			new ViewerSettingsFrame().setVisible(true);
 //		});
 		preferencesItem.setEnabled(!AppController.getInstance().getMDIPanel().getViewers().isEmpty());
-		displayMenu.add(gotoMenuItem);
-		displayMenu.add(findMenuItem);
-		displayMenu.add(replaceMenuItem);
-		displayMenu.add(preferencesItem);
-		displayMenu.add(new JSeparator());
+//		displayMenu.add(gotoMenuItem);
+//		displayMenu.add(findMenuItem);
+//		displayMenu.add(replaceMenuItem);
+//		displayMenu.add(preferencesItem);
+//		displayMenu.add(new JSeparator());
 
 		// ------ About menu
 		JMenuItem aboutItem = new JMenuItem(mBundle.getString("menu.about.about"));
 		aboutMenu.add(aboutItem);
 
 		add(fileMenu);
-		add(displayMenu);
+		add(getDisplayMenu());
 		add(aboutMenu);
+	}
+	
+	public JMenu getDisplayMenu() {
+		JMenu displayMenu = new JMenu(mBundle.getString("menu.display"));
+		JCheckBoxMenuItem displayToolbarItem = new JCheckBoxMenuItem(new DisplayToolbarAction());
+		displayToolbarItem.setText(mBundle.getString("menu.display.toolbar"));
+		displayMenu.add(displayToolbarItem);
+		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(mBundle.getString("menu.display.displaybar"));
+		displayMenu.add(displayDisplaybarItem);
+		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(mBundle.getString("menu.display.statusbar"));
+		displayMenu.add(displayStatusBar);
+		displayMenu.add(new JSeparator());
+		return displayMenu;
 	}
 }
