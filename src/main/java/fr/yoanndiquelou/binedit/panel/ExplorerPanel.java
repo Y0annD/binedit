@@ -33,13 +33,10 @@ public class ExplorerPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 2415755023812800243L;
 
-	private DefaultTreeModel mTreeModel;
-
 	/**
 	 * Explorateur de fichier
 	 */
 	public ExplorerPanel() {
-//		mTreeModel = new DefaultTreeModel();
 		TreeModel model = new FileContentProvider();
 		JTree tree = new JTree(model);
 		tree.setTransferHandler(new FileTransferHandler());

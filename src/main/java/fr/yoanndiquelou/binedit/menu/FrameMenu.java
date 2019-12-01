@@ -12,6 +12,7 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import fr.yoanndiquelou.binedit.AppController;
+import fr.yoanndiquelou.binedit.command.GotoCommand;
 
 /**
  * Main frame menu.
@@ -56,12 +57,19 @@ public class FrameMenu extends JMenuBar {
 		fileMenu.add(exitItem);
 
 		// ------ Display menu
+		JMenuItem gotoMenuItem = new JMenuItem(mBundle.getString("menu.display.goto"));
+		gotoMenuItem.addActionListener(new GotoCommand());
+		JMenuItem findMenuItem = new JMenuItem(mBundle.getString("menu.display.find"));
+		JMenuItem replaceMenuItem = new JMenuItem(mBundle.getString("menu.display.replace"));
 		JMenuItem preferencesItem = new JMenuItem(mBundle.getString("menu.display.preferences"));
 //		preferencesItem.setEnabled(false);
 //		preferencesItem.addActionListener(l->{
 //			new ViewerSettingsFrame().setVisible(true);
 //		});
 		preferencesItem.setEnabled(!AppController.getInstance().getMDIPanel().getViewers().isEmpty());
+		displayMenu.add(gotoMenuItem);
+		displayMenu.add(findMenuItem);
+		displayMenu.add(replaceMenuItem);
 		displayMenu.add(preferencesItem);
 		displayMenu.add(new JSeparator());
 

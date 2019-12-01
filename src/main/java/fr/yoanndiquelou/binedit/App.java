@@ -1,9 +1,7 @@
 package fr.yoanndiquelou.binedit;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
-import fr.yoanndiquelou.binedit.laf.BinEditLookAndFeel;
 import fr.yoanndiquelou.binedit.laf.ui.BinEditLookAndFeelCustomizer;
 
 /**

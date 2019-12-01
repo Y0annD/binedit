@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Locale;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import fr.yoanndiquelou.binedit.Settings;
@@ -132,7 +133,8 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			if (columnIndex > mSettings.getNbWordPerLine()) {
 				columnIndex -= mSettings.getNbWordPerLine();
 			}
-			byte a = mContent[(rowIndex * mSettings.getNbWordPerLine() -mContentStartAddress)+ columnIndex - 1 + mSettings.getShift()];
+			byte a = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex - 1
+					+ mSettings.getShift()];
 			return true;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return false;
@@ -191,29 +193,38 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	}
 
 	public void updateViewPort(int firstRow) {
+		System.out.println("Line: " + firstRow + " - " + firstRow * mSettings.getNbWordPerLine());
 		long firstAddress = firstRow * mSettings.getNbWordPerLine();
-		if (firstAddress < mContentStartAddress
-				|| (firstAddress > mContentStartAddress + 0.75 * mChunkSize&& mContentStartAddress+mChunkSize<mFileSize)) {
+		if (firstAddress < mContentStartAddress || (firstAddress > mContentStartAddress + 0.75 * mChunkSize
+				&& mContentStartAddress + mChunkSize < mFileSize)) {
 			long startAddress = -1;
+			System.out.println("Update");
 			if (firstAddress >= mContentStartAddress + 0.75 * mChunkSize) {
-				startAddress = Math.min((long) (mContentStartAddress + 0.5 * mChunkSize), mFileSize);
+				System.out.println("Case 1");
+				startAddress = Math.max(0, Math.min((long) (firstAddress - 0.25 * mChunkSize), mFileSize));
 			} else {
-				startAddress = Math.max(0, (long) (mContentStartAddress - 0.5 * mChunkSize));
+				System.out.println("Case 2");
+				startAddress = Math.min(Math.max(0, (long) (firstAddress - 0.5 * mChunkSize)), mFileSize);
 			}
-			if(startAddress%mSettings.getNbWordPerLine()!=0) {
-				startAddress=startAddress-startAddress%mSettings.getNbWordPerLine();
+			if (startAddress % mSettings.getNbWordPerLine() != 0) {
+				startAddress = startAddress - startAddress % mSettings.getNbWordPerLine();
+				System.out.println("Case 3");
 			}
-			try {
-				mBuffer.clear();
-				Arrays.fill(mContent, (byte)0);
-				mFile.getChannel().position(startAddress).read(mBuffer);
-				mBuffer.flip();
-				mContentStartAddress = (int) startAddress;
-				mContent = mBuffer.array();
-				fireTableDataChanged();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			System.out.println("Update: " + startAddress);
+			final long fstartAddress = startAddress;
+			SwingUtilities.invokeLater(() -> {
+				try {
+					mBuffer.clear();
+					Arrays.fill(mContent, (byte) 0);
+					mFile.getChannel().position(fstartAddress).read(mBuffer);
+					mBuffer.flip();
+					mContentStartAddress = (int) fstartAddress;
+					mContent = mBuffer.array();
+					fireTableDataChanged();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
 		}
 	}
 }
