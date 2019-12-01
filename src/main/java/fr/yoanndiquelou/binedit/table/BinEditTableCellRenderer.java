@@ -61,20 +61,17 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 				if((int)value<0) {
 					result = "-0".concat(result.substring(1));
 				}else {
-					result = "0".concat(result);
+					result = "0x0".concat(result.substring(2));
 				}
 			}
-//			while (((int)value >= 0 ? result.length() : result.length() - 1) < maxChar) {
-//				if (addr < 0) {
-//					result = "-0".concat(result.substring(1));
-//				} else {
-//					result = "0".concat(result);
-//				}
-//			}
-		} else if (column > model.getSettings().getNbWordPerLine()) {
-			result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
-		} else {
-			result = String.format("%02x", byteValue).toUpperCase(Locale.getDefault());
+		} else if (model.isValidAddress(row, column)) {
+			if(column > model.getSettings().getNbWordPerLine()) {
+				result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
+			} else {
+				result = String.format("%02x", byteValue).toUpperCase(Locale.getDefault());
+			}
+		}else{
+			result = "";
 		}
 		JComponent cell = (JComponent) super.getTableCellRendererComponent(table, result, isSelected, hasFocus, row,
 				column);

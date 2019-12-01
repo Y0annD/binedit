@@ -126,12 +126,16 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	 * @param columnIndex column index in table
 	 * @return true if valid.
 	 */
-	private boolean isValidAddress(int rowIndex, int columnIndex) {
+	public boolean isValidAddress(int rowIndex, int columnIndex) {
 		try {
 			if (columnIndex == 0)
 				return true;
 			if (columnIndex > mSettings.getNbWordPerLine()) {
 				columnIndex -= mSettings.getNbWordPerLine();
+			}
+			if(rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1
+					+ mSettings.getShift()>=mFileSize) {
+				return false;
 			}
 			byte a = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex - 1
 					+ mSettings.getShift()];
@@ -198,19 +202,14 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 		if (firstAddress < mContentStartAddress || (firstAddress > mContentStartAddress + 0.75 * mChunkSize
 				&& mContentStartAddress + mChunkSize < mFileSize)) {
 			long startAddress = -1;
-			System.out.println("Update");
 			if (firstAddress >= mContentStartAddress + 0.75 * mChunkSize) {
-				System.out.println("Case 1");
 				startAddress = Math.max(0, Math.min((long) (firstAddress - 0.25 * mChunkSize), mFileSize));
 			} else {
-				System.out.println("Case 2");
 				startAddress = Math.min(Math.max(0, (long) (firstAddress - 0.5 * mChunkSize)), mFileSize);
 			}
 			if (startAddress % mSettings.getNbWordPerLine() != 0) {
 				startAddress = startAddress - startAddress % mSettings.getNbWordPerLine();
-				System.out.println("Case 3");
 			}
-			System.out.println("Update: " + startAddress);
 			final long fstartAddress = startAddress;
 			SwingUtilities.invokeLater(() -> {
 				try {
