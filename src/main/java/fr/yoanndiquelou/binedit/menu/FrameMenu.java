@@ -13,8 +13,10 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import fr.yoanndiquelou.binedit.AppController;
+import fr.yoanndiquelou.binedit.Settings;
 import fr.yoanndiquelou.binedit.command.GotoCommand;
 import fr.yoanndiquelou.binedit.menu.action.DisplayToolbarAction;
+import fr.yoanndiquelou.binedit.menu.action.VisibilityAction;
 
 /**
  * Main frame menu.
@@ -83,17 +85,41 @@ public class FrameMenu extends JMenuBar {
 		add(getDisplayMenu());
 		add(aboutMenu);
 	}
-	
+
 	public JMenu getDisplayMenu() {
 		JMenu displayMenu = new JMenu(mBundle.getString("menu.display"));
 		JCheckBoxMenuItem displayToolbarItem = new JCheckBoxMenuItem(new DisplayToolbarAction());
 		displayToolbarItem.setText(mBundle.getString("menu.display.toolbar"));
+		displayToolbarItem.setSelected(Settings.getDisplayToolbar());
 		displayMenu.add(displayToolbarItem);
-		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(mBundle.getString("menu.display.displaybar"));
+		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_DISPLAYBAR));
+		displayDisplaybarItem.setText(mBundle.getString("menu.display.displaybar"));
+		displayDisplaybarItem.setSelected(Settings.getVisibility(Settings.DISPLAY_DISPLAYBAR));
+		displayDisplaybarItem.setEnabled(false);
 		displayMenu.add(displayDisplaybarItem);
-		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(mBundle.getString("menu.display.statusbar"));
+		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_STATUSBAR));
+		displayStatusBar.setText(mBundle.getString("menu.display.statusbar"));
+		displayStatusBar.setEnabled(false);
 		displayMenu.add(displayStatusBar);
 		displayMenu.add(new JSeparator());
+		JMenuItem fontItem = new JMenuItem(mBundle.getString("menu.display.font"));
+		displayMenu.add(fontItem);
+		JMenuItem colorItem = new JMenuItem(mBundle.getString("menu.display.color"));
+		displayMenu.add(colorItem);
+		displayMenu.add(new JSeparator());
+		JCheckBoxMenuItem addressesVisibilityItem = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_ADDRESSES));
+		addressesVisibilityItem.setText(mBundle.getString("menu.display.address"));
+		displayMenu.add(addressesVisibilityItem);
+		displayMenu.add(new JSeparator());
+		JCheckBoxMenuItem addressesInHexa = new JCheckBoxMenuItem(new VisibilityAction(Settings.ADDRESSES_HEXA));
+		addressesInHexa.setText(mBundle.getString("menu.display.address.hexa"));
+		displayMenu.add(addressesInHexa);
+		JCheckBoxMenuItem informationInHexa = new JCheckBoxMenuItem(new VisibilityAction(Settings.INFO_HEXA));
+		informationInHexa.setText(mBundle.getString("menu.display.info.hexa"));
+		displayMenu.add(informationInHexa);
+		displayMenu.add(new JSeparator());
+		JMenuItem infoByLine = new JMenuItem(mBundle.getString("menu.display.info.line"));
+		displayMenu.add(infoByLine);
 		return displayMenu;
 	}
 }

@@ -172,8 +172,12 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	public void updateSelection() {
 		long minRow = mModel.getMinSelectionAddr() / mSettings.getNbWordPerLine();
 		long maxRow = mModel.getMaxSelectionAddr() / mSettings.getNbWordPerLine();
-		long minColumn = mModel.getMinSelectionAddr() - minRow * mSettings.getNbWordPerLine() + 1;
-		long maxColumn = mModel.getMaxSelectionAddr() - maxRow * mSettings.getNbWordPerLine() + 1;
+		long minColumn = mModel.getMinSelectionAddr() - minRow * mSettings.getNbWordPerLine();
+		long maxColumn = mModel.getMaxSelectionAddr() - maxRow * mSettings.getNbWordPerLine();
+		if(Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+			minColumn+=1;
+			maxColumn+=1;
+		}
 		mTable.getSelectionModel().addSelectionInterval((int) minRow, (int) maxRow);
 		mTable.getColumnModel().getSelectionModel().addSelectionInterval((int) minColumn, (int) maxColumn);
 	}
@@ -227,10 +231,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			long minSelectionAddr;
 			long maxSelectionAddr;
 			long anchorRow = mTable.getSelectionModel().getAnchorSelectionIndex();
-			long anchorColumn = mTable.getColumnModel().getSelectionModel().getAnchorSelectionIndex() - 1;
-			if (anchorColumn > mSettings.getNbWordPerLine()) {
-				anchorColumn -= mSettings.getNbWordPerLine();
-			}
+			long anchorColumn = mTable.getColumnModel().getSelectionModel().getAnchorSelectionIndex();
+			
 			long minRow;
 			long maxRow;
 			long minColumn;
@@ -238,8 +240,16 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 
 			minRow = mTable.getSelectionModel().getMinSelectionIndex();
 			maxRow = mTable.getSelectionModel().getMaxSelectionIndex();
-			minColumn = mTable.getColumnModel().getSelectionModel().getMinSelectionIndex() - 1;
-			maxColumn = mTable.getColumnModel().getSelectionModel().getMaxSelectionIndex() - 1;
+			minColumn = mTable.getColumnModel().getSelectionModel().getMinSelectionIndex();
+			maxColumn = mTable.getColumnModel().getSelectionModel().getMaxSelectionIndex();
+			if(Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+				minColumn-=1;
+				maxColumn-=1;
+				anchorColumn-=1;
+			}
+			if (anchorColumn > mSettings.getNbWordPerLine()) {
+				anchorColumn -= mSettings.getNbWordPerLine();
+			}
 			if (minColumn > mSettings.getNbWordPerLine()) {
 				minColumn -= mSettings.getNbWordPerLine();
 			}

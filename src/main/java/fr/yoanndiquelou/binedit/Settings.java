@@ -17,6 +17,16 @@ public class Settings {
 	public static final String NB_BYTES = "NB_BYTES";
 	/** Display toolbar. */
 	public static final String DISPLAY_TOOLBAR = "DISPLAY_TOOLBAR";
+	/** Display display bar. */
+	public static final String DISPLAY_DISPLAYBAR = "DISPLAY_DISPLAYBAR";
+	/** Display status bar. */
+	public static final String DISPLAY_STATUSBAR = "DISPLAY_STATUSBAR";
+	/** Display addresses. */
+	public static final String DISPLAY_ADDRESSES = "DISPLAY_ADDRESSES";
+	/** Display addresses in hexa. */
+	public static final String ADDRESSES_HEXA = "ADDRESSES_HEXA";
+	/** Display addresses in hexa. */
+	public static final String INFO_HEXA = "INFO_HEXA";
 
 	private static final Preferences mPrefs = Preferences.userRoot().node(Settings.class.getName());
 
@@ -93,10 +103,10 @@ public class Settings {
 
 	public static void setDisplayToolbar(boolean display) {
 		boolean oldValue = getDisplayToolbar();
-		if(oldValue != display) {
+		if (oldValue != display) {
 			mPrefs.putBoolean(DISPLAY_TOOLBAR, display);
-			for(PropertyChangeListener listener: mListeners) {
-				if(null != mListeners) {
+			for (PropertyChangeListener listener : mListeners) {
+				if (null != mListeners) {
 					listener.propertyChange(new PropertyChangeEvent(display, DISPLAY_TOOLBAR, oldValue, display));
 				}
 			}
@@ -105,7 +115,35 @@ public class Settings {
 	}
 
 	public static boolean getDisplayToolbar() {
-		return mPrefs.getBoolean(DISPLAY_TOOLBAR, true);
+		return getVisibility(DISPLAY_TOOLBAR);
+	}
+
+	/**
+	 * Get property visibility.
+	 * 
+	 * @param property property to get
+	 * @return visibility
+	 */
+	public static boolean getVisibility(String property) {
+		return mPrefs.getBoolean(property, true);
+	}
+
+	/**
+	 * Set property visibility.
+	 * 
+	 * @param property property to change
+	 * @param value    value to put
+	 */
+	public static void setVisibility(String property, boolean value) {
+		boolean oldValue = getVisibility(property);
+		if (oldValue != value) {
+			mPrefs.putBoolean(property, value);
+			for (PropertyChangeListener listener : mListeners) {
+				if (null != mListeners) {
+					listener.propertyChange(new PropertyChangeEvent(property, property, oldValue, value));
+				}
+			}
+		}
 	}
 
 	/**

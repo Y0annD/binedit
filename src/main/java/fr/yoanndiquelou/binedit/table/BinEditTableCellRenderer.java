@@ -14,6 +14,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import fr.yoanndiquelou.binedit.Settings;
 import fr.yoanndiquelou.binedit.utils.AddressUtils;
 
 /**
@@ -55,22 +56,29 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		String result;
 		byte byteValue = (byte) ((int) value & 0xFF);
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
-		if (column == 0) {
-			result = AddressUtils.getHexString((int) value);
-			while(result.length()<model.mMaxAddrStr.length()) {
-				if((int)value<0) {
+		if (column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+			if (Settings.getVisibility(Settings.ADDRESSES_HEXA)) {
+				result = AddressUtils.getHexString((int) value);
+			} else {
+				result = String.valueOf(value);
+			}
+			while (result.length() < model.mMaxAddrStr.length()) {
+				if ((int) value < 0) {
 					result = "-0".concat(result.substring(1));
-				}else {
-					result = "0x0".concat(result.substring(2));
+				} else {
+					result = (Settings.getVisibility(Settings.ADDRESSES_HEXA) ? "0x0" : "0")
+							.concat(result.substring((Settings.getVisibility(Settings.ADDRESSES_HEXA) ? 2 : 0)));
 				}
 			}
 		} else if (model.isValidAddress(row, column)) {
-			if(column > model.getSettings().getNbWordPerLine()) {
+			if (column > model.getSettings().getNbWordPerLine()) {
 				result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
+			} else if (!Settings.getVisibility(Settings.INFO_HEXA)) {
+				result = String.valueOf(byteValue);
 			} else {
 				result = String.format("%02x", byteValue).toUpperCase(Locale.getDefault());
 			}
-		}else{
+		} else {
 			result = "";
 		}
 		JComponent cell = (JComponent) super.getTableCellRendererComponent(table, result, isSelected, hasFocus, row,
@@ -78,7 +86,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		setHorizontalAlignment(JLabel.CENTER);
 		setVerticalAlignment(JLabel.CENTER);
 
-		if (column == 0) {
+		if (column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			setHorizontalAlignment(JLabel.RIGHT);
 		} else if (column <= model.getSettings().getNbWordPerLine()) {
 			String tooltip = "<html><b>" + mBundle.getString("VALUE") + "</b><br/><b>" + mBundle.getString("BINARY")
@@ -94,7 +102,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 
 		if (isCellSelected(table, row, column)) {
 			cell.setBackground(UIManager.getColor("Selection.background"));
-			cell.setForeground(/* UIManager.getColor("Selection.foreground") */Color.white);
+			cell.setForeground(Color.white);
 
 			cell.setFont(font.deriveFont(Font.BOLD));
 			cell.setBorder(mSelectedBorder);
@@ -107,10 +115,44 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 			}
 			cell.setForeground(Color.black);
 		}
-		if (column == 0 || column == model.getSettings().getNbWordPerLine()) {
+		if ((column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES))
+				|| (column == model.getSettings().getNbWordPerLine())) {
 			cell.setBorder(mLimitBorder);
 		}
 		return cell;
+	}
+
+	private boolean multilineSelection(BinEditTableModel model, int row, int column) {
+		boolean selected;
+		// Cas ou l'on à plusieurs lignes selectionnées
+		long maxRows = model.getMaxSelectionAddr() / model.getSettings().getNbWordPerLine();
+		long minRows = model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine();
+		long minColumn = model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine();
+		long maxColumn = model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine();
+		if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+			minColumn += 1;
+			maxColumn += 1;
+		}
+		if (row > minRows && row < maxRows) {
+			selected = true;
+		} else if (row == minRows) {
+			if (column <= model.getSettings().getNbWordPerLine()) {
+				selected = column >= minColumn;
+			} else {
+				selected = column - model.getSettings().getNbWordPerLine() >= minColumn;
+			}
+		} else if (row == maxRows) {
+			if (column <= model.getSettings().getNbWordPerLine()) {
+				selected = column <= maxColumn;
+			} else {
+				selected = column - model.getSettings().getNbWordPerLine() <= maxColumn;
+			}
+
+		} else {
+			selected = false;
+		}
+		System.out.println("Multiline selection: " + selected);
+		return selected;
 	}
 
 	public boolean isCellSelected(JTable table, int row, int column) {
@@ -118,38 +160,20 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
 
 		if (model.getMaxSelectionAddr() / model.getSettings().getNbWordPerLine() != model.getMinSelectionAddr()
-				/ model.getSettings().getNbWordPerLine() && column != 0) {
-			// Cas ou l'on à plusieurs lignes selectionnées
-			long maxRows = model.getMaxSelectionAddr() / model.getSettings().getNbWordPerLine();
-			long minRows = model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine();
-			long minColumn = model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine() + 1;
-			long maxColumn = model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine() + 1;
-			if (row > minRows && row < maxRows) {
-				selected = true;
-			} else if (row == minRows) {
-				if (column <= model.getSettings().getNbWordPerLine()) {
-					selected = column >= minColumn;
-				} else {
-					selected = column - model.getSettings().getNbWordPerLine() >= minColumn;
-				}
-			} else if (row == maxRows) {
-				if (column <= model.getSettings().getNbWordPerLine()) {
-					selected = column <= maxColumn;
-				} else {
-					selected = column - model.getSettings().getNbWordPerLine() <= maxColumn;
-				}
-
-			}
-		} else if (column != 0) {
+				/ model.getSettings().getNbWordPerLine()
+				&& (column != 0 || !Settings.getVisibility(Settings.DISPLAY_ADDRESSES))) {
+			selected = multilineSelection(model, row, column);
+		} else if ((column != 0 || !Settings.getVisibility(Settings.DISPLAY_ADDRESSES))) {
+			int delta = (Settings.getVisibility(Settings.DISPLAY_ADDRESSES) ? 1 : 0);
 			if (column <= model.getSettings().getNbWordPerLine()) {
 				selected = (row == model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine()
-						&& column - 1 <= model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine()
-						&& column - 1 >= model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine());
+						&& column - delta <= model.getMaxSelectionAddr() % model.getSettings().getNbWordPerLine()
+						&& column - delta >= model.getMinSelectionAddr() % model.getSettings().getNbWordPerLine());
 			} else {
 				selected = (row == model.getMinSelectionAddr() / model.getSettings().getNbWordPerLine()
-						&& column - 1 - model.getSettings().getNbWordPerLine() <= model.getMaxSelectionAddr()
+						&& column - delta - model.getSettings().getNbWordPerLine() <= model.getMaxSelectionAddr()
 								% model.getSettings().getNbWordPerLine()
-						&& column - 1 - model.getSettings().getNbWordPerLine() >= model.getMinSelectionAddr()
+						&& column - delta - model.getSettings().getNbWordPerLine() >= model.getMinSelectionAddr()
 								% model.getSettings().getNbWordPerLine());
 			}
 		}

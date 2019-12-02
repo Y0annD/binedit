@@ -76,12 +76,19 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 
 	@Override
 	public int getColumnCount() {
-		return (mDisplayMode.displayChar() ? 2 : 1) * mSettings.getNbWordPerLine() + 1;
+		int columnCount = mSettings.getNbWordPerLine();
+		if (mDisplayMode.displayChar()) {
+			columnCount += mSettings.getNbWordPerLine();
+		}
+		if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+			columnCount += 1;
+		}
+		return columnCount;
 	}
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (columnIndex == 0) {
+		if (columnIndex == 0 && !Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			return false;
 		} else {
 			return super.isCellEditable(rowIndex, columnIndex);
@@ -92,13 +99,18 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		int result;
 		if (isValidAddress(rowIndex, columnIndex)) {
-			if (columnIndex > mSettings.getNbWordPerLine()) {
+			int diffAddress = 0;
+			if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+				diffAddress = 1;
+			}
+			if ((columnIndex - diffAddress) >= mSettings.getNbWordPerLine()) {
 				result = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex
-						- mSettings.getNbWordPerLine() - 1 + mSettings.getShift()];
-			} else if (columnIndex > 0) {
-				result = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex - 1
-						+ mSettings.getShift()];
+						- mSettings.getNbWordPerLine() - diffAddress + mSettings.getShift()];
+			} else if ((columnIndex - diffAddress) >= 0) {
+				result = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex
+						- diffAddress + mSettings.getShift()];
 			} else {
+				// Display address enabled
 				result = getAddress(rowIndex, columnIndex) + 1;
 			}
 		} else {
@@ -115,8 +127,10 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	 * @return
 	 */
 	public int getAddress(int rowIndex, int columnIndex) {
-		return rowIndex * mSettings.getNbWordPerLine() + (columnIndex < mSettings.getNbWordPerLine() ? columnIndex
-				: columnIndex - mSettings.getNbWordPerLine()) - 1 + mSettings.getShift();
+		return rowIndex * mSettings.getNbWordPerLine()
+				+ (columnIndex < mSettings.getNbWordPerLine() ? columnIndex
+						: columnIndex - mSettings.getNbWordPerLine())
+				- (Settings.getVisibility(Settings.DISPLAY_ADDRESSES) ? 1 : 0) + mSettings.getShift();
 	}
 
 	/**
@@ -128,19 +142,25 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	 */
 	public boolean isValidAddress(int rowIndex, int columnIndex) {
 		try {
-			if (columnIndex == 0)
+			int displayAddresses = -1;
+			if (!Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+				displayAddresses = 0;
+			} else if (columnIndex == 0) {
 				return true;
+			}
 			if (columnIndex > mSettings.getNbWordPerLine()) {
 				columnIndex -= mSettings.getNbWordPerLine();
 			}
-			if(rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1
-					+ mSettings.getShift()>=mFileSize) {
+
+			if (rowIndex * mSettings.getNbWordPerLine() + columnIndex - 1 + mSettings.getShift() >= mFileSize) {
 				return false;
 			}
-			byte a = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex - 1
-					+ mSettings.getShift()];
+			byte a = mContent[(rowIndex * mSettings.getNbWordPerLine() - mContentStartAddress) + columnIndex
+					+ displayAddresses + mSettings.getShift()];
 			return true;
-		} catch (ArrayIndexOutOfBoundsException e) {
+		} catch (
+
+		ArrayIndexOutOfBoundsException e) {
 			return false;
 		}
 
@@ -193,11 +213,12 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			}
 		} else if (Settings.WORD_PER_LINE.equals(evt.getPropertyName())) {
 			mSettings.setNbWordPerline((int) evt.getNewValue());
+		}else if(Settings.DISPLAY_ADDRESSES.equals(evt.getPropertyName())) {
+			fireTableStructureChanged();
 		}
 	}
 
 	public void updateViewPort(int firstRow) {
-		System.out.println("Line: " + firstRow + " - " + firstRow * mSettings.getNbWordPerLine());
 		long firstAddress = firstRow * mSettings.getNbWordPerLine();
 		if (firstAddress < mContentStartAddress || (firstAddress > mContentStartAddress + 0.75 * mChunkSize
 				&& mContentStartAddress + mChunkSize < mFileSize)) {
