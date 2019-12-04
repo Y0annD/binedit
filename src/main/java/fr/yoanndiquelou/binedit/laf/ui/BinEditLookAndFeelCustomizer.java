@@ -19,8 +19,8 @@ public final class BinEditLookAndFeelCustomizer {
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		UIManager.put("Table.font", new Font(/*"Courier"*/"Fixedsys", Font.BOLD, mUIPreferences.getInt("BinaryViewer.font.size", 9)));
-		UIManager.put("Table.alternateRowColor", Color.lightGray);
+		UIManager.put("BinaryViewer.Font", new Font(/*"Courier"*/"Fixedsys", Font.BOLD, mUIPreferences.getInt("BinaryViewer.font.size", 9)));
+		UIManager.put("BinaryViewer.alternateRowColor", Color.lightGray);
 		UIManager.put("Table.focusCellForeground", Color.black);
 		UIManager.put("Table.focusCellBackground", Color.white);
 		UIManager.put("Table.selectionForeground", Color.black);

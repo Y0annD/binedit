@@ -20,7 +20,7 @@ public class BinEditLookAndFeel extends NimbusLookAndFeel {
 	public UIDefaults getDefaults() {
 		UIDefaults uidefaults = super.getDefaults();
 		uidefaults.put("EditorPaneUI", BEEditorPaneUI.class.getName());
-		uidefaults.put("Table.font", new Font("Courier", Font.PLAIN, 12));
+		uidefaults.put("BinaryViewer.Font", new Font("Courier", Font.PLAIN, 12));
 		uidefaults.put("Table.alternateRowColor", Color.lightGray);
 		uidefaults.put("Table.focusCellForeground", Color.black);
 		uidefaults.put("Table.focusCellBackground", Color.white);

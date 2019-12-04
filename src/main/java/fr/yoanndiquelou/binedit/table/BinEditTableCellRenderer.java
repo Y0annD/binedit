@@ -56,6 +56,10 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		String result;
 		byte byteValue = (byte) ((int) value & 0xFF);
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
+		int diffAddress = 0;
+		if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+			diffAddress = 1;
+		}
 		if (column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			if (Settings.getVisibility(Settings.ADDRESSES_HEXA)) {
 				result = AddressUtils.getHexString((int) value);
@@ -71,7 +75,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 				}
 			}
 		} else if (model.isValidAddress(row, column)) {
-			if (column > model.getSettings().getNbWordPerLine()) {
+			if (column >= model.getSettings().getNbWordPerLine() +diffAddress) {
 				result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
 			} else if (!Settings.getVisibility(Settings.INFO_HEXA)) {
 				result = String.valueOf(byteValue);
@@ -97,7 +101,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 					+ String.format("%02x", model.getAddress(row, column)).toUpperCase(Locale.getDefault()) + "</html>";
 			cell.setToolTipText(tooltip);
 		}
-		Font font = UIManager.getFont("Table.font");
+		Font font = UIManager.getFont("BinaryViewer.Font");
 		cell.setBorder(mDefaultBorder);
 
 		if (isCellSelected(table, row, column)) {
@@ -109,14 +113,14 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		} else {
 			cell.setFont(font.deriveFont(Font.PLAIN));
 			if (row % 2 != 0) {
-				cell.setBackground(UIManager.getColor("Table.alternateRowColor"));
+				cell.setBackground(UIManager.getColor("BinaryViewer.alternateRowColor"));
 			} else {
-				cell.setBackground(UIManager.getColor("Table.background"));
+				cell.setBackground(UIManager.getColor("BinaryViewer.background"));
 			}
 			cell.setForeground(Color.black);
 		}
 		if ((column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES))
-				|| (column == model.getSettings().getNbWordPerLine())) {
+				|| (column == (model.getSettings().getNbWordPerLine()-1+diffAddress))) {
 			cell.setBorder(mLimitBorder);
 		}
 		return cell;
@@ -151,7 +155,6 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		} else {
 			selected = false;
 		}
-		System.out.println("Multiline selection: " + selected);
 		return selected;
 	}
 
