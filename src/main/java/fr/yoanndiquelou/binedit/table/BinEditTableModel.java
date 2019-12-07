@@ -88,7 +88,7 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (columnIndex == 0 && !Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+		if (columnIndex == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			return false;
 		} else {
 			return super.isCellEditable(rowIndex, columnIndex);
@@ -215,6 +215,8 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			mSettings.setNbWordPerline((int) evt.getNewValue());
 		}else if(Settings.DISPLAY_ADDRESSES.equals(evt.getPropertyName())) {
 			fireTableStructureChanged();
+		}else if(Settings.ADDRESSES_HEXA.equals(evt.getPropertyName())|| Settings.INFO_HEXA.equals(evt.getPropertyName())) {
+			fireTableDataChanged();
 		}
 	}
 

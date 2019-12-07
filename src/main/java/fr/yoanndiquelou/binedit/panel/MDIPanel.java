@@ -17,6 +17,7 @@ public class MDIPanel extends JDesktopPane {
 	private Set<BinaryViewer> mViewers;
 
 	public MDIPanel() {
+		setName("MDI");
 		mViewers = new HashSet<>();
 	}
 

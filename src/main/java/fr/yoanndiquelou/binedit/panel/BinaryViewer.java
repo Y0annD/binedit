@@ -2,7 +2,6 @@ package fr.yoanndiquelou.binedit.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,9 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -90,6 +87,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			mModel = new BinEditTableModel(mRaf, size, mSettings);
 			TableCellRenderer renderer = new BinEditTableCellRenderer();
 			mTable = new JTable(mModel);
+			mTable.setName("ContentTable");
 			mTable.setFillsViewportHeight(true);
 			mTable.setRowSelectionAllowed(true);
 			mTable.setColumnSelectionAllowed(true);
@@ -163,6 +161,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 				mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
 				mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
 			});
+
 			mModel.addTableModelListener(l -> {
 				updateTableConstraints();
 			});
@@ -189,18 +188,15 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		int width;
 		int maxWidth = 0;
 		JLabel label = new JLabel();
-		
+
 		int start = 0;
-		if(Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
+		if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			start = 1;
 		}
 		for (int i = start; i < mTable.getColumnModel().getColumnCount(); i++) {
 			column = mTable.getColumnModel().getColumn(i);
 			column.sizeWidthToFit();
-			if (i == 0) {
-				width = SwingUtilities.computeStringWidth(label.getFontMetrics(UIManager.getFont("BinaryViewer.Font")),
-						mModel.mMaxAddrStr);
-			} else if (i > mSettings.getNbWordPerLine()) {
+			if (i > mSettings.getNbWordPerLine()) {
 				width = 17;
 			} else {
 				width = 24;
@@ -234,7 +230,6 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 * Repaint du tabulaire pour le changement de selection de la colone.
 	 */
 	public void valueChanged(ListSelectionEvent le) {
-		if (null != mTable) {
 			long minSelectionAddr;
 			long maxSelectionAddr;
 			long anchorRow = mTable.getSelectionModel().getAnchorSelectionIndex();
@@ -249,18 +244,26 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			maxRow = mTable.getSelectionModel().getMaxSelectionIndex();
 			minColumn = mTable.getColumnModel().getSelectionModel().getMinSelectionIndex();
 			maxColumn = mTable.getColumnModel().getSelectionModel().getMaxSelectionIndex();
+			int showAddresses = 0;
 			if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
-				minColumn -= 1;
-				maxColumn -= 1;
-				anchorColumn -= 1;
+				showAddresses = 1;
+				if (minColumn > 0) {
+					minColumn -= 1;
+				}
+				if (maxColumn > 0) {
+					maxColumn -= 1;
+				}
+				if (anchorColumn > 0) {
+					anchorColumn -= 1;
+				}
 			}
-			if (anchorColumn > mSettings.getNbWordPerLine()) {
+			if (anchorColumn > mSettings.getNbWordPerLine()-showAddresses) {
 				anchorColumn -= mSettings.getNbWordPerLine();
 			}
-			if (minColumn > mSettings.getNbWordPerLine()) {
+			if (minColumn > mSettings.getNbWordPerLine()-showAddresses) {
 				minColumn -= mSettings.getNbWordPerLine();
 			}
-			if (maxColumn > mSettings.getNbWordPerLine()) {
+			if (maxColumn > mSettings.getNbWordPerLine()-showAddresses) {
 				maxColumn -= mSettings.getNbWordPerLine();
 			}
 			minSelectionAddr = minRow * mSettings.getNbWordPerLine();
@@ -301,8 +304,6 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			mInfoPanel.setAddr(minSelectionAddr + mSettings.getShift(), maxSelectionAddr + mSettings.getShift());
 
 			mTable.repaint();
-
-		}
 	}
 
 	@Override

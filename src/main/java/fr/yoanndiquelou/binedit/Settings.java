@@ -106,9 +106,7 @@ public class Settings {
 		if (oldValue != display) {
 			mPrefs.putBoolean(DISPLAY_TOOLBAR, display);
 			for (PropertyChangeListener listener : mListeners) {
-				if (null != mListeners) {
-					listener.propertyChange(new PropertyChangeEvent(display, DISPLAY_TOOLBAR, oldValue, display));
-				}
+				listener.propertyChange(new PropertyChangeEvent(display, DISPLAY_TOOLBAR, oldValue, display));
 			}
 		}
 
@@ -139,9 +137,7 @@ public class Settings {
 		if (oldValue != value) {
 			mPrefs.putBoolean(property, value);
 			for (PropertyChangeListener listener : mListeners) {
-				if (null != mListeners) {
-					listener.propertyChange(new PropertyChangeEvent(property, property, oldValue, value));
-				}
+				listener.propertyChange(new PropertyChangeEvent(property, property, oldValue, value));
 			}
 		}
 	}
@@ -152,9 +148,7 @@ public class Settings {
 	 * @param listener listener to add
 	 */
 	public static void addSettingsChangeListener(PropertyChangeListener listener) {
-		if (!mListeners.contains(listener)) {
-			mListeners.add(listener);
-		}
+		mListeners.add(listener);
 	}
 
 	/**
@@ -163,8 +157,6 @@ public class Settings {
 	 * @param listener listener to remove
 	 */
 	public static void removePropertyChangeListener(PropertyChangeListener listener) {
-		if (mListeners.contains(listener)) {
-			mListeners.remove(listener);
-		}
+		mListeners.remove(listener);
 	}
 }

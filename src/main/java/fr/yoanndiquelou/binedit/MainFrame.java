@@ -2,6 +2,7 @@ package fr.yoanndiquelou.binedit;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -47,7 +48,6 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setJMenuBar(new FrameMenu());
-
 		JPanel explorerPanel = new ExplorerPanel();
 
 		JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, explorerPanel, mController.getMDIPanel());
@@ -92,9 +92,10 @@ public class MainFrame extends JFrame {
 		mToolbar = new JToolBar();
 		mToolbar.setName("Toolbar");
 		JButton openButton = new JButton(UIManager.getIcon("FileView.directoryIcon"));
+		openButton.setName("open.button");
 		openButton.addActionListener(a -> {
 			JFileChooser fc = new JFileChooser();
-			int result = fc.showOpenDialog(null);
+			int result = fc.showOpenDialog(MainFrame.this);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				mController.getInstance().openFile(fc.getSelectedFile());
 			}
@@ -122,13 +123,13 @@ public class MainFrame extends JFrame {
 		}
 		mToolbar.setVisible(Settings.getDisplayToolbar());
 		Settings.addSettingsChangeListener(new PropertyChangeListener() {
-			
+
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if(Settings.DISPLAY_TOOLBAR.equals(evt.getPropertyName())) {
-					mToolbar.setVisible((boolean)evt.getNewValue());
+				if (Settings.DISPLAY_TOOLBAR.equals(evt.getPropertyName())) {
+					mToolbar.setVisible((boolean) evt.getNewValue());
 				}
-				
+
 			}
 		});
 	}

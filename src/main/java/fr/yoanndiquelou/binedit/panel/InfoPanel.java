@@ -35,6 +35,7 @@ public class InfoPanel extends JPanel {
 	public InfoPanel(long size) {
 		setLayout(new BorderLayout());
 		mAddrLabel = new JLabel(String.valueOf(0));
+		mAddrLabel.setName("AddrLabel");
 		setBorder(new BevelBorder(BevelBorder.LOWERED));
 		JPanel sizePanel = new JPanel();
 		sizePanel.add(new JLabel(mBundle.getString("FILE_SIZE")));
@@ -42,6 +43,7 @@ public class InfoPanel extends JPanel {
 		mShiftPanel = new JPanel();
 		mShiftPanel.add(new JLabel(mBundle.getString("SHIFT")));
 		mShiftLabel = new JLabel();
+		mShiftLabel.setName("ShiftLabel");
 		mShiftPanel.add(new JLabel());
 		mShiftPanel.setVisible(false);
 		JPanel addrPanel = new JPanel();

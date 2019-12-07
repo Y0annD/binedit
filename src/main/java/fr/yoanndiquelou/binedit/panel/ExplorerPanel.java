@@ -39,6 +39,7 @@ public class ExplorerPanel extends JPanel {
 	public ExplorerPanel() {
 		TreeModel model = new FileContentProvider();
 		JTree tree = new JTree(model);
+		tree.setName("Tree");
 		tree.setTransferHandler(new FileTransferHandler());
 		tree.addTreeWillExpandListener(new TreeWillExpandListener() {
 
