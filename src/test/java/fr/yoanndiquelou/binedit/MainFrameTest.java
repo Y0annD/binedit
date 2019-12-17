@@ -156,7 +156,12 @@ public class MainFrameTest extends DefaultUITest {
 		binaryViewer.label("AddrLabel").requireText("[0X1A;0X49]");
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.address").click();
-
+		// Addresses in base10
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.address.hexa").click();
+		binaryViewer.label("AddrLabel").requireText("[26;73]");
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.address.hexa").click();
 		binaryViewer.close();
 	}
 

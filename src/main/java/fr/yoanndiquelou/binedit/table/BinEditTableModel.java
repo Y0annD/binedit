@@ -217,6 +217,7 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			fireTableStructureChanged();
 		}else if(Settings.ADDRESSES_HEXA.equals(evt.getPropertyName())|| Settings.INFO_HEXA.equals(evt.getPropertyName())) {
 			fireTableDataChanged();
+			updateSelection(mMinAddr, mMaxAddr);
 		}
 	}
 

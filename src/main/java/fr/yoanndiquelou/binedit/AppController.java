@@ -1,7 +1,9 @@
 package fr.yoanndiquelou.binedit;
 
+import java.awt.event.FocusListener;
 import java.io.File;
 
+import fr.yoanndiquelou.binedit.panel.BinaryViewer;
 import fr.yoanndiquelou.binedit.panel.MDIPanel;
 
 /**
@@ -13,7 +15,8 @@ import fr.yoanndiquelou.binedit.panel.MDIPanel;
 public class AppController {
 	/** This instance. */
 	private static AppController INSTANCE = new AppController();
-
+	/** Focused editor. */
+	private BinaryViewer mFocusedEditor;
 	/** MDI zone. */
 	private MDIPanel mMdiPanel = new MDIPanel();
 
@@ -33,12 +36,40 @@ public class AppController {
 		return INSTANCE;
 	}
 
+	/**
+	 * Get MDI panel.
+	 * 
+	 * @return MDI panel
+	 */
 	public MDIPanel getMDIPanel() {
 		return mMdiPanel;
 	}
 
+	/**
+	 * Open a new file.
+	 * 
+	 * @param file file to open
+	 */
 	public void openFile(File file) {
 		mMdiPanel.open(file);
+	}
+
+	/**
+	 * Defined focused editor.
+	 * 
+	 * @param focusedEditor focused editor
+	 */
+	public void setFocusedEditor(BinaryViewer focusedEditor) {
+		mFocusedEditor = focusedEditor;
+	}
+
+	/**
+	 * Get focused editor
+	 * 
+	 * @return focused editor
+	 */
+	public BinaryViewer getFocusedEditor() {
+		return mFocusedEditor;
 	}
 
 }

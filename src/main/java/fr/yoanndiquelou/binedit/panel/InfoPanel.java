@@ -71,8 +71,15 @@ public class InfoPanel extends JPanel {
 	 * @param newAddr new address
 	 */
 	public void setAddr(long newMinAddr, long newMaxAddr) {
-		String minAddr = AddressUtils.getHexString(newMinAddr*Settings.getDisplayMode().getBytes());
-		String maxAddr = AddressUtils.getHexString(newMaxAddr*Settings.getDisplayMode().getBytes());
+		String minAddr;
+		String maxAddr;
+		if (Settings.getVisibility(Settings.ADDRESSES_HEXA)) {
+			minAddr = AddressUtils.getHexString(newMinAddr * Settings.getDisplayMode().getBytes());
+			maxAddr = AddressUtils.getHexString(newMaxAddr * Settings.getDisplayMode().getBytes());
+		} else {
+			minAddr = String.valueOf(newMinAddr * Settings.getDisplayMode().getBytes());
+			maxAddr = String.valueOf(newMaxAddr * Settings.getDisplayMode().getBytes());
+		}
 		if (minAddr.equals(maxAddr)) {
 			mAddrLabel.setText(minAddr);
 		} else {

@@ -15,6 +15,7 @@ import javax.swing.KeyStroke;
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.Settings;
 import fr.yoanndiquelou.binedit.command.GotoCommand;
+import fr.yoanndiquelou.binedit.frame.ViewerSettingsFrame;
 import fr.yoanndiquelou.binedit.menu.action.DisplayToolbarAction;
 import fr.yoanndiquelou.binedit.menu.action.VisibilityAction;
 
@@ -97,7 +98,8 @@ public class FrameMenu extends JMenuBar {
 		displayToolbarItem.setName("menu.display.toolbar");
 		displayToolbarItem.setSelected(Settings.getDisplayToolbar());
 		displayMenu.add(displayToolbarItem);
-		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_DISPLAYBAR));
+		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(
+				new VisibilityAction(Settings.DISPLAY_DISPLAYBAR));
 		displayDisplaybarItem.setText(mBundle.getString("menu.display.displaybar"));
 		displayDisplaybarItem.setName("menu.display.displaybar");
 		displayDisplaybarItem.setSelected(Settings.getVisibility(Settings.DISPLAY_DISPLAYBAR));
@@ -118,7 +120,8 @@ public class FrameMenu extends JMenuBar {
 		colorItem.setEnabled(false);
 		displayMenu.add(colorItem);
 		displayMenu.add(new JSeparator());
-		JCheckBoxMenuItem addressesVisibilityItem = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_ADDRESSES));
+		JCheckBoxMenuItem addressesVisibilityItem = new JCheckBoxMenuItem(
+				new VisibilityAction(Settings.DISPLAY_ADDRESSES));
 		addressesVisibilityItem.setText(mBundle.getString("menu.display.address"));
 		addressesVisibilityItem.setName("menu.display.address");
 		displayMenu.add(addressesVisibilityItem);
@@ -135,6 +138,13 @@ public class FrameMenu extends JMenuBar {
 		JMenuItem infoByLine = new JMenuItem(mBundle.getString("menu.display.info.line"));
 		infoByLine.setName("menu.display.info.line");
 		displayMenu.add(infoByLine);
+		infoByLine.addActionListener((e) -> {
+			if (null != AppController.getInstance().getFocusedEditor()) {
+				ViewerSettingsFrame frame = new ViewerSettingsFrame(
+						AppController.getInstance().getFocusedEditor().getSettings());
+				frame.setVisible(true);
+			}
+		});
 		return displayMenu;
 	}
 }
