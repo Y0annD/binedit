@@ -7,12 +7,15 @@ import java.io.File;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.exception.ComponentLookupException;
 import org.assertj.swing.fixture.JInternalFrameFixture;
+import org.assertj.swing.fixture.JPanelFixture;
 import org.assertj.swing.fixture.JToolBarFixture;
 import org.assertj.swing.fixture.JTreeFixture;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import fr.yoanndiquelou.binedit.panel.InfoPanel;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class MainFrameTest extends DefaultUITest {
@@ -59,7 +62,7 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.toolbar").requireVisible().requireEnabled();
 		mWindow.menuItem("menu.display.displaybar").requireVisible().requireDisabled();
-		mWindow.menuItem("menu.display.statusbar").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.display.statusbar").requireVisible().requireEnabled();
 		mWindow.menuItem("menu.display.font").requireVisible().requireDisabled();
 		mWindow.menuItem("menu.display.color").requireVisible().requireDisabled();
 		mWindow.menuItem("menu.display.address").requireVisible().requireEnabled();
@@ -105,6 +108,15 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.menuItem("menu.display.info.hexa").click();
 		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(0).column(1), "23");
 
+		// Test display status bar
+		JPanelFixture infoPanel = binaryViewer.panel(InfoPanel.INFO_PANEL_NAME);
+		infoPanel.requireVisible();
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.statusbar").click();
+		infoPanel.requireNotVisible();
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.statusbar").click();
+		infoPanel.requireVisible();
 		binaryViewer.close();
 	}
 

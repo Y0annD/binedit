@@ -17,7 +17,8 @@ import fr.yoanndiquelou.binedit.utils.AddressUtils;
  *
  */
 public class InfoPanel extends JPanel {
-
+	/** Nom du panel. */
+	public static final String INFO_PANEL_NAME = "INFO_PANEL";
 	private ResourceBundle mBundle = ResourceBundle
 			.getBundle("fr.yoanndiquelou.binedit.panel.resources.InformationBundle");
 	/**
@@ -33,6 +34,7 @@ public class InfoPanel extends JPanel {
 	private JLabel mShiftLabel;
 
 	public InfoPanel(long size) {
+		setName(INFO_PANEL_NAME);
 		setLayout(new BorderLayout());
 		mAddrLabel = new JLabel(String.valueOf(0));
 		mAddrLabel.setName("AddrLabel");

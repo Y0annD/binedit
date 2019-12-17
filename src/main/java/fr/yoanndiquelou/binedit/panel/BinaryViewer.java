@@ -166,6 +166,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 				public void propertyChange(PropertyChangeEvent evt) {
 					if (Settings.ADDRESSES_HEXA.equals(evt.getPropertyName())) {
 						mInfoPanel.setAddr(mModel.getMinSelectionAddr(), mModel.getMaxSelectionAddr());
+					} else if (Settings.DISPLAY_STATUSBAR.equals(evt.getPropertyName())) {
+						mInfoPanel.setVisible((boolean) evt.getNewValue());
 					}
 				}
 			};
@@ -190,13 +192,13 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		addFocusListener(new FocusListener() {
-			
+
 			@Override
 			public void focusLost(FocusEvent e) {
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				AppController.getInstance().setFocusedEditor(BinaryViewer.this);

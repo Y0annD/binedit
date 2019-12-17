@@ -8,6 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import fr.yoanndiquelou.binedit.panel.BinaryViewer;
+
 public class GoToDialog extends JDialog {
 
 	/**
@@ -15,7 +17,7 @@ public class GoToDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -7741240142437612950L;
 
-	public GoToDialog() {
+	public GoToDialog(BinaryViewer viewer) {
 		super();
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();

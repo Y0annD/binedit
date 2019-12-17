@@ -108,7 +108,7 @@ public class FrameMenu extends JMenuBar {
 		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_STATUSBAR));
 		displayStatusBar.setText(mBundle.getString("menu.display.statusbar"));
 		displayStatusBar.setName("menu.display.statusbar");
-		displayStatusBar.setEnabled(false);
+		displayStatusBar.setSelected(Settings.getVisibility(Settings.DISPLAY_STATUSBAR));
 		displayMenu.add(displayStatusBar);
 		displayMenu.add(new JSeparator());
 		JMenuItem fontItem = new JMenuItem(mBundle.getString("menu.display.font"));
