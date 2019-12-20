@@ -21,6 +21,11 @@ public class MDIPanel extends JDesktopPane {
 		mViewers = new HashSet<>();
 	}
 
+	/**
+	 * Open a new editor.
+	 * 
+	 * @param file file to watch
+	 */
 	public void open(File file) {
 		SwingUtilities.invokeLater(() -> {
 			BinaryViewer viewer = new BinaryViewer(file);

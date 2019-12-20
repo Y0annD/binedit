@@ -70,7 +70,7 @@ public class ExplorerPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-				if (selRow != -1&&e.getClickCount() == 2) {
+				if (selRow != -1&&e.getClickCount() == 2 && !((FileNode)((DefaultMutableTreeNode)selPath.getLastPathComponent()).getUserObject()).getFile().isDirectory()) {
 						AppController.getInstance().openFile(((FileNode)((DefaultMutableTreeNode)selPath.getLastPathComponent()).getUserObject()).getFile());
 				}
 			}
