@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
@@ -19,8 +20,13 @@ public class ViewerSettingsFrame extends JDialog {
 	private static final long serialVersionUID = -4659234961010726451L;
 	/** resources bundle. */
 	private ResourceBundle mBundle = ResourceBundle
-			.getBundle("fr.yoanndiquelou.binedit.frame.resources.ViewerSettings");;
+			.getBundle("fr.yoanndiquelou.binedit.frame.resources.ViewerSettings");
 
+	/**
+	 * Frame for Viewer settings.
+	 * 
+	 * @param viewerSettings viewer settings model
+	 */
 	public ViewerSettingsFrame(ViewerSettings viewerSettings) {
 		setLocationRelativeTo(null);
 		setModal(true);
@@ -32,13 +38,16 @@ public class ViewerSettingsFrame extends JDialog {
 		c.gridy = 0;
 
 		JLabel label = new JLabel(mBundle.getString("WORDS_PER_LINE"));
+		JLabel shiftLabel = new JLabel(mBundle.getString("SHIFT"));
+		JLabel fixedColumnLabel = new JLabel(mBundle.getString("FIXED_COLUMNS"));
+		c.anchor = GridBagConstraints.WEST;
 		JSpinner tf = new JSpinner();
 		tf.setValue(viewerSettings.getNbWordPerLine());
-		((JSpinner.DefaultEditor)tf.getEditor()).getTextField().setColumns(4);
+		((JSpinner.DefaultEditor) tf.getEditor()).getTextField().setColumns(4);
 		add(label, c);
 		c.gridx++;
 		add(tf, c);
-		JLabel shiftLabel = new JLabel(mBundle.getString("SHIFT"));
+
 		JSpinner shiftSpinner = new JSpinner();
 		shiftSpinner.setValue(viewerSettings.getShift());
 		((JSpinner.DefaultEditor) shiftSpinner.getEditor()).getTextField().setColumns(4);
@@ -47,10 +56,20 @@ public class ViewerSettingsFrame extends JDialog {
 		add(shiftLabel, c);
 		c.gridx++;
 		add(shiftSpinner, c);
+		c.gridy++;
+		c.gridx = 0;
+
+		add(fixedColumnLabel, c);
+		c.gridx++;
+		JCheckBox fixedColumnCheckBox = new JCheckBox();
+		fixedColumnCheckBox.setName("FIXED_COLUMNS");
+		fixedColumnCheckBox.setSelected(viewerSettings.getFixNumberOfColumn());
+		add(fixedColumnCheckBox, c);
 		JButton validate = new JButton(mBundle.getString("CONFIRM"));
 		validate.addActionListener(l -> {
 			viewerSettings.setNbWordPerline(Integer.valueOf(tf.getValue().toString()));
 			viewerSettings.setShift(Integer.valueOf(shiftSpinner.getValue().toString()));
+			viewerSettings.setFixNumberOfColumn(fixedColumnCheckBox.isSelected());
 			dispose();
 		});
 		c.gridx = 0;

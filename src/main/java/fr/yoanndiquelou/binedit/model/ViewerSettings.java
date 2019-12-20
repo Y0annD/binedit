@@ -14,6 +14,8 @@ public class ViewerSettings implements Serializable {
 
 	/** Number of word per line property key. */
 	public static final String NB_WORD_PER_LINE = "nbWordPerLine";
+	/** Fix number of column key. */
+	public static final String FIX_NB_OF_COLUMN = "fixNumberOfColumn";
 	/** Shift key. */
 	public static final String SHIFT = "shift";
 
@@ -24,6 +26,8 @@ public class ViewerSettings implements Serializable {
 	private int mNbWordPerLine;
 	/** Shift number. */
 	private int mShift;
+	/** Fix number of column. */
+	private boolean mFixNumberOfColumn;
 	/** Preferences. */
 	private Preferences mPrefs;
 
@@ -34,6 +38,7 @@ public class ViewerSettings implements Serializable {
 		changeSupport = new PropertyChangeSupport(this);
 		mPrefs = prefs;
 		mNbWordPerLine = prefs.getInt(NB_WORD_PER_LINE, 16);
+		mFixNumberOfColumn = prefs.getBoolean(FIX_NB_OF_COLUMN, true);
 		mShift = 0;
 	}
 
@@ -80,6 +85,27 @@ public class ViewerSettings implements Serializable {
 			mShift = shift;
 			changeSupport.firePropertyChange(SHIFT, oldValue, mShift);
 		}
+	}
+
+	/**
+	 * Does the number of columns are fix or depends of frame size.
+	 * 
+	 * @param fix fix number of column or not
+	 */
+	public void setFixNumberOfColumn(boolean fix) {
+		if (mFixNumberOfColumn != fix) {
+			mFixNumberOfColumn = fix;
+			changeSupport.firePropertyChange(FIX_NB_OF_COLUMN, !fix, mFixNumberOfColumn);
+		}
+	}
+
+	/**
+	 * Is fixed number of column.
+	 * 
+	 * @return fix number of column
+	 */
+	public boolean getFixNumberOfColumn() {
+		return mFixNumberOfColumn;
 	}
 
 	public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
