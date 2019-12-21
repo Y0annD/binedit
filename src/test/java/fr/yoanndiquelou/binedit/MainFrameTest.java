@@ -1,11 +1,18 @@
 package fr.yoanndiquelou.binedit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import org.assertj.swing.core.KeyPressInfo;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.exception.ComponentLookupException;
+import org.assertj.swing.fixture.DialogFixture;
+import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JInternalFrameFixture;
 import org.assertj.swing.fixture.JPanelFixture;
 import org.assertj.swing.fixture.JToolBarFixture;
@@ -181,17 +188,63 @@ public class MainFrameTest extends DefaultUITest {
 	public void step05_testTree() {
 		JTreeFixture tree = mWindow.tree("Tree");
 		tree.replaceSeparator("-");
-		System.out.println("Separator: " +tree.separator());
 		tree.toggleRow(1);
-		System.out.println(tree.node(1).value());
 		tree.expandPath("Tous les disques-/-Users");
 		tree.expandPath("Tous les disques-/-Users-yoann");
 		tree.selectPath("Tous les disques-/-Users-yoann-Devoxx2019.md");
 		tree.drag("Tous les disques-/-Users-yoann-Devoxx2019.md");
 		Point p = tree.target().getLocation();
-		p.setLocation(p.x+tree.target().getWidth()+20, p.y+20);
+		p.setLocation(p.x + tree.target().getWidth() + 20, p.y + 20);
 		mWindow.drop();
 		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
+		tree.doubleClickPath("Tous les disques-/-Users-yoann-Devoxx2019.md");
+		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
+		tree.clickPath("Tous les disques-/-Users-yoann");
+	}
+
+	@Test
+	public void step06_testViewerSettingsFrame() {
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().approve();
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		mWindow.menuItem("menu.display").requireVisible();
+		mWindow.menuItem("menu.display.info.line").click();
+		DialogFixture settingsFrame = mWindow.dialog("Preferences");
+		settingsFrame.spinner("WORDS_PER_LINE").decrement().decrement().decrement().decrement();
+		settingsFrame.button("CONFIRM").click();
+		assertEquals(41, binaryViewer.table("ContentTable").target().getColumnCount());
+
+		mWindow.menuItem("menu.display").requireVisible();
+		mWindow.menuItem("menu.display.info.line").click();
+		settingsFrame = mWindow.dialog("Preferences");
+		settingsFrame.spinner("WORDS_PER_LINE").increment();
+		settingsFrame.button("CANCEL").click();
+		assertEquals(41, binaryViewer.table("ContentTable").target().getColumnCount());
+		mWindow.menuItem("menu.display").requireVisible();
+		mWindow.menuItem("menu.display.info.line").click();
+		settingsFrame = mWindow.dialog("Preferences");
+		settingsFrame.spinner("SHIFT").increment();
+		settingsFrame.checkBox("FIXED_COLUMNS").click();
+		settingsFrame.button("CONFIRM").click();
+		int initialColumnCount = binaryViewer.table("ContentTable").target().getColumnCount();
+		binaryViewer.resizeWidthTo(binaryViewer.target().getWidth() + 30);
+		binaryViewer.panel(InfoPanel.INFO_PANEL_NAME).label("ShiftLabel").requireText("0X01 (1)");
+		assertFalse(initialColumnCount == binaryViewer.table("ContentTable").target().getColumnCount());
+		binaryViewer.resizeWidthTo(binaryViewer.target().getWidth() - 30);
+		assertTrue(initialColumnCount == binaryViewer.table("ContentTable").target().getColumnCount());
+		binaryViewer.close();
+	}
+
+	@Test
+	public void testScroll() {
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().approve();
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		binaryViewer.scrollBar("ContentScroll_Vertical").scrollToMaximum();
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
@@ -199,5 +252,5 @@ public class MainFrameTest extends DefaultUITest {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

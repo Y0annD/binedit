@@ -5,6 +5,8 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.prefs.Preferences;
 
+import fr.yoanndiquelou.binedit.Settings;
+
 public class ViewerSettings implements Serializable {
 
 	/**
@@ -37,7 +39,7 @@ public class ViewerSettings implements Serializable {
 	public ViewerSettings(Preferences prefs) {
 		changeSupport = new PropertyChangeSupport(this);
 		mPrefs = prefs;
-		mNbWordPerLine = prefs.getInt(NB_WORD_PER_LINE, 16);
+		mNbWordPerLine = prefs.getInt(NB_WORD_PER_LINE, Settings.getBytesPerLine());
 		mFixNumberOfColumn = prefs.getBoolean(FIX_NB_OF_COLUMN, true);
 		mShift = 0;
 	}

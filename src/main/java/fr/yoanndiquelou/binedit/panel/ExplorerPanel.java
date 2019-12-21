@@ -21,7 +21,7 @@ import fr.yoanndiquelou.binedit.handler.FileTransferHandler;
 import fr.yoanndiquelou.binedit.model.FileContentProvider;
 
 /**
- * Explorateur de fichiers.
+ * File explorer.
  * 
  * @author yoann
  *
@@ -34,7 +34,7 @@ public class ExplorerPanel extends JPanel {
 	private static final long serialVersionUID = 2415755023812800243L;
 
 	/**
-	 * Explorateur de fichier
+	 * File explorer.
 	 */
 	public ExplorerPanel() {
 		TreeModel model = new FileContentProvider();
@@ -61,7 +61,7 @@ public class ExplorerPanel extends JPanel {
 
 			@Override
 			public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-				// On s'en fout
+				// We don't care
 			}
 		});
 		tree.setDragEnabled(true);

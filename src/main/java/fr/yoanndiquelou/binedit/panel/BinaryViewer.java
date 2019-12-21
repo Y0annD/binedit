@@ -141,6 +141,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			updateTableConstraints();
 			mScroll = new JScrollPane(mTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			mScroll.getVerticalScrollBar().setName("ContentScroll_Vertical");
 			mScroll.getViewport().addChangeListener(new DelayedChangeHandler());
 			mScroll.getViewport().addChangeListener(new ChangeListener() {
 

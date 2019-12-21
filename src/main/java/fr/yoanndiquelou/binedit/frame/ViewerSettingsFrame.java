@@ -42,6 +42,7 @@ public class ViewerSettingsFrame extends JDialog {
 		JLabel fixedColumnLabel = new JLabel(mBundle.getString("FIXED_COLUMNS"));
 		c.anchor = GridBagConstraints.WEST;
 		JSpinner tf = new JSpinner();
+		tf.setName("WORDS_PER_LINE");
 		tf.setValue(viewerSettings.getNbWordPerLine());
 		((JSpinner.DefaultEditor) tf.getEditor()).getTextField().setColumns(4);
 		add(label, c);
@@ -50,6 +51,7 @@ public class ViewerSettingsFrame extends JDialog {
 
 		JSpinner shiftSpinner = new JSpinner();
 		shiftSpinner.setValue(viewerSettings.getShift());
+		shiftSpinner.setName("SHIFT");
 		((JSpinner.DefaultEditor) shiftSpinner.getEditor()).getTextField().setColumns(4);
 		c.gridy++;
 		c.gridx = 0;
@@ -66,6 +68,7 @@ public class ViewerSettingsFrame extends JDialog {
 		fixedColumnCheckBox.setSelected(viewerSettings.getFixNumberOfColumn());
 		add(fixedColumnCheckBox, c);
 		JButton validate = new JButton(mBundle.getString("CONFIRM"));
+		validate.setName("CONFIRM");
 		validate.addActionListener(l -> {
 			viewerSettings.setNbWordPerline(Integer.valueOf(tf.getValue().toString()));
 			viewerSettings.setShift(Integer.valueOf(shiftSpinner.getValue().toString()));
@@ -76,6 +79,7 @@ public class ViewerSettingsFrame extends JDialog {
 		c.gridy++;
 		add(validate, c);
 		JButton cancel = new JButton(mBundle.getString("CANCEL"));
+		cancel.setName("CANCEL");
 		cancel.addActionListener(l -> {
 			dispose();
 		});

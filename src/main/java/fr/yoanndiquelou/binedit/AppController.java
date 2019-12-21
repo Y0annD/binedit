@@ -1,6 +1,5 @@
 package fr.yoanndiquelou.binedit;
 
-import java.awt.event.FocusListener;
 import java.io.File;
 
 import fr.yoanndiquelou.binedit.panel.BinaryViewer;

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import fr.yoanndiquelou.binedit.panel.BinaryViewer;
+
 /**
  * Abstract test class for UI test.
  * 
@@ -34,6 +36,7 @@ public abstract class DefaultUITest {
 		mRobot = BasicRobot.robotWithCurrentAwtHierarchy();
 		ApplicationLauncher.application(App.class).start();
 		mWindow = WindowFinder.findFrame(MainFrame.class).using(mRobot);
+		
 		FailOnThreadViolationRepaintManager.install();
 	}
 
@@ -52,6 +55,7 @@ public abstract class DefaultUITest {
 	public void resetPreferences() {
 		try {
 			Preferences.userRoot().node(Settings.class.getName()).clear();
+			Preferences.userRoot().node(BinaryViewer.class.getName()).clear();
 			Preferences.userRoot().clear();
 			Preferences.systemRoot().clear();
 		} catch (BackingStoreException e) {

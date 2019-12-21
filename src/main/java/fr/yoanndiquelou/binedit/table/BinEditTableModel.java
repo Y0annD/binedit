@@ -213,14 +213,20 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 			}
 		} else if (Settings.WORD_PER_LINE.equals(evt.getPropertyName())) {
 			mSettings.setNbWordPerline((int) evt.getNewValue());
-		}else if(Settings.DISPLAY_ADDRESSES.equals(evt.getPropertyName())) {
+		} else if (Settings.DISPLAY_ADDRESSES.equals(evt.getPropertyName())) {
 			fireTableStructureChanged();
-		}else if(Settings.ADDRESSES_HEXA.equals(evt.getPropertyName())|| Settings.INFO_HEXA.equals(evt.getPropertyName())) {
+		} else if (Settings.ADDRESSES_HEXA.equals(evt.getPropertyName())
+				|| Settings.INFO_HEXA.equals(evt.getPropertyName())) {
 			fireTableDataChanged();
 			updateSelection(mMinAddr, mMaxAddr);
 		}
 	}
 
+	/**
+	 * Content update according to viewport.
+	 * 
+	 * @param firstRow firstRow of viewport
+	 */
 	public void updateViewPort(int firstRow) {
 		long firstAddress = firstRow * mSettings.getNbWordPerLine();
 		if (firstAddress < mContentStartAddress || (firstAddress > mContentStartAddress + 0.75 * mChunkSize

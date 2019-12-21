@@ -5,16 +5,24 @@ import javax.swing.SwingUtilities;
 import fr.yoanndiquelou.binedit.laf.ui.BinEditLookAndFeelCustomizer;
 
 /**
- * Hello world!
+ * BinEdit app launcher.
  *
  */
 public class App {
-	public static void main( String[] args )
-    {
 
-        SwingUtilities.invokeLater(()->{
-        	BinEditLookAndFeelCustomizer.customize();
-        	MainFrame frame = new MainFrame();	
-        });
-    }
+	/**
+	 * Launcher.
+	 */
+	public void launch() {
+		SwingUtilities.invokeLater(() -> {
+			BinEditLookAndFeelCustomizer.customize();
+			MainFrame frame = new MainFrame();
+		});
+	}
+
+	public static void main(String[] args) {
+		App app = new App();
+		app.launch();
+
+	}
 }
