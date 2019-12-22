@@ -40,6 +40,15 @@ public abstract class DefaultUITest {
 		FailOnThreadViolationRepaintManager.install();
 	}
 
+	public void sleep(long timeout) {
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@BeforeEach
 	public void beforeEach() {
 		resetPreferences();

@@ -67,6 +67,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	private JScrollPane mScroll;
 	/** Property change listener. */
 	private PropertyChangeListener mSettingListener;
+	/** Editor specific setting listener. */
+	private PropertyChangeListener mLocalSettingListener;
 
 	/**
 	 * Binary file viewer.
@@ -172,19 +174,26 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			};
 			Settings.addSettingsChangeListener(mSettingListener);
 
-			mSettings.addPropertyChangeListener(l -> {
-				mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
-				mTable.getColumnModel().getSelectionModel().removeListSelectionListener(BinaryViewer.this);
-				mModel.fireTableStructureChanged();
-				computeMaxColumnNumber();
-				updateTableConstraints();
+			mLocalSettingListener = new PropertyChangeListener() {
+				
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
+					mTable.getColumnModel().getSelectionModel().removeListSelectionListener(BinaryViewer.this);
+					mModel.fireTableStructureChanged();
+					computeMaxColumnNumber();
+					updateTableConstraints();
 
-				updateSelection();
-				mInfoPanel.setShift(mSettings.getShift());
-				mTable.repaint();
-				mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
-				mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
-			});
+					updateSelection();
+					mInfoPanel.setShift(mSettings.getShift());
+					mTable.repaint();
+					mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
+					mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
+					
+				}
+			};
+			
+			mSettings.addPropertyChangeListener(mLocalSettingListener);
 
 			mModel.addTableModelListener(l -> {
 				updateTableConstraints();
@@ -389,6 +398,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 
 	@Override
 	public void dispose() {
+		mSettings.removePropertyChangeListener(mLocalSettingListener);
 		Settings.removePropertyChangeListener(mSettingListener);
 		Settings.removePropertyChangeListener(mModel);
 		try {

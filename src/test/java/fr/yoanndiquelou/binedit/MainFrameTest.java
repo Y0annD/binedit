@@ -7,12 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ResourceBundle;
 
-import org.assertj.swing.core.KeyPressInfo;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.exception.ComponentLookupException;
 import org.assertj.swing.fixture.DialogFixture;
-import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JFileChooserFixture;
 import org.assertj.swing.fixture.JInternalFrameFixture;
 import org.assertj.swing.fixture.JPanelFixture;
 import org.assertj.swing.fixture.JToolBarFixture;
@@ -26,6 +26,10 @@ import fr.yoanndiquelou.binedit.panel.InfoPanel;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class MainFrameTest extends DefaultUITest {
+	/** File used for test. */
+	private static final String FILE_STR = String.join(File.separator, "test-resources", "test.bin");
+	private static final File file = new File(new File(FILE_STR).getAbsolutePath());
+	private static final String TREE_SEPARATOR = "|";
 
 	public void localSetUp() {
 		resetPreferences();
@@ -42,11 +46,14 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.menuItem("menu.file").click();
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+
+		System.out.println(file.getAbsolutePath());
+		mWindow.fileChooser().setCurrentDirectory(file/* .getParentFile() */);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().cancel();
 		boolean found;
 		try {
-			mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+			mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 			found = true;
 		} catch (ComponentLookupException e) {
 			found = false;
@@ -54,13 +61,17 @@ public class MainFrameTest extends DefaultUITest {
 		Assert.assertFalse(found);
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
-		mWindow.fileChooser().approve();
-		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
+		JFileChooserFixture fileChooserFixture = mWindow.fileChooser();
+		fileChooserFixture.setCurrentDirectory(file);
+		fileChooserFixture.selectFile(file);
+		fileChooserFixture.approveButton().requireEnabled();
+		fileChooserFixture.approve();
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
 		mWindow.button("open.button").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().approve();
-		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
 	}
 
 	@Test
@@ -84,9 +95,10 @@ public class MainFrameTest extends DefaultUITest {
 		toolbar.requireVisible();
 
 		mWindow.button("open.button").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().approve();
-		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		binaryViewer.table("ContentTable").requireColumnCount(Settings.getBytesPerLine() * 2 + 1);
 
 		// Test displayAddress
@@ -98,22 +110,22 @@ public class MainFrameTest extends DefaultUITest {
 		binaryViewer.table("ContentTable").requireColumnCount(Settings.getBytesPerLine() * 2 + 1);
 
 		// Test address hexa
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "0x0018");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "0x000018");
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.address.hexa").click();
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "000024");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "00000024");
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.address.hexa").click();
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "0x0018");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(0), "0x000018");
 
 		// Test info hexa
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(0).column(1), "23");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(3), "1A");
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.info.hexa").click();
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(0).column(1), "35");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(3), "26");
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.info.hexa").click();
-		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(0).column(1), "23");
+		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(3), "1A");
 
 		// Test display status bar
 		JPanelFixture infoPanel = binaryViewer.panel(InfoPanel.INFO_PANEL_NAME);
@@ -131,9 +143,10 @@ public class MainFrameTest extends DefaultUITest {
 	public void step04_singleSelection() {
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().approve();
-		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		binaryViewer.label("ShiftLabel").requireText("");
 		binaryViewer.label("AddrLabel").requireText("0");
 		binaryViewer.table("ContentTable").pressKey(KeyEvent.VK_SHIFT).cell(TableCell.row(1).column(0)).click();
@@ -187,28 +200,41 @@ public class MainFrameTest extends DefaultUITest {
 	@Test
 	public void step05_testTree() {
 		JTreeFixture tree = mWindow.tree("Tree");
-		tree.replaceSeparator("-");
+		tree.replaceSeparator(TREE_SEPARATOR);
 		tree.toggleRow(1);
-		tree.expandPath("Tous les disques-/-Users");
-		tree.expandPath("Tous les disques-/-Users-yoann");
-		tree.selectPath("Tous les disques-/-Users-yoann-Devoxx2019.md");
-		tree.drag("Tous les disques-/-Users-yoann-Devoxx2019.md");
+		String path = ResourceBundle.getBundle("fr.yoanndiquelou.binedit.panel.ExplorerBundle").getString("DRIVES");
+		path = path.concat(TREE_SEPARATOR);
+		String[] filePath = file.getAbsolutePath().split(File.separator);
+		if (file.getAbsolutePath().startsWith("/")) {
+			path = path.concat("/").concat(TREE_SEPARATOR);
+		}
+		tree.expandPath(path);
+		for (int i = 0; i < filePath.length - 1; i++) {
+			if (!filePath[i].isEmpty()) {
+				path = path.concat(filePath[i]).concat(TREE_SEPARATOR);
+				tree.expandPath(path);
+			}
+		}
+		path = path.concat(filePath[filePath.length - 1]);
+		tree.selectPath(path);
+		tree.drag(path);
 		Point p = tree.target().getLocation();
 		p.setLocation(p.x + tree.target().getWidth() + 20, p.y + 20);
 		mWindow.drop();
-		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
-		tree.doubleClickPath("Tous les disques-/-Users-yoann-Devoxx2019.md");
-		mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md").close();
-		tree.clickPath("Tous les disques-/-Users-yoann");
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
+		tree.doubleClickPath(path);
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
+		tree.clickPath(path.substring(0, path.lastIndexOf(TREE_SEPARATOR)));
 	}
 
 	@Test
 	public void step06_testViewerSettingsFrame() {
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().approve();
-		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		mWindow.menuItem("menu.display").requireVisible();
 		mWindow.menuItem("menu.display.info.line").click();
 		DialogFixture settingsFrame = mWindow.dialog("Preferences");
@@ -234,23 +260,41 @@ public class MainFrameTest extends DefaultUITest {
 		assertFalse(initialColumnCount == binaryViewer.table("ContentTable").target().getColumnCount());
 		binaryViewer.resizeWidthTo(binaryViewer.target().getWidth() - 30);
 		assertTrue(initialColumnCount == binaryViewer.table("ContentTable").target().getColumnCount());
+		mWindow.menuItem("menu.display").requireVisible();
+		mWindow.menuItem("menu.display.info.line").click();
+		settingsFrame = mWindow.dialog("Preferences");
+		settingsFrame.checkBox("FIXED_COLUMNS").click();
+		settingsFrame.button("CONFIRM").click();
 		binaryViewer.close();
 	}
 
 	@Test
-	public void testScroll() {
+	public void step07_testScroll() {
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
-		mWindow.fileChooser().selectFile(new File("/Users/yoann/Devoxx2019.md"));
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
 		mWindow.fileChooser().approve();
-		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_yoann/Devoxx2019.md");
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		binaryViewer.scrollBar("ContentScroll_Vertical").scrollToMaximum();
+		binaryViewer.close();
+	}
+
+	@Test
+	public void step08_testContentMode() {
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
+		mWindow.fileChooser().approve();
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		binaryViewer.close();
 	}
-
 }
