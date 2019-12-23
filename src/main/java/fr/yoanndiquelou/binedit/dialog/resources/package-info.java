@@ -1,0 +1,1 @@
+package fr.yoanndiquelou.binedit.dialog.resources;

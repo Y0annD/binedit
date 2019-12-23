@@ -41,41 +41,26 @@ public class MainFrameTest extends DefaultUITest {
 	}
 
 	@Test
-	public void step02_testOpenFile() {
-		mWindow.menuItem("menu.file").requireVisible();
-		mWindow.menuItem("menu.file").click();
-		mWindow.menuItem("menu.file.open").requireVisible();
-		mWindow.menuItem("menu.file.open").click();
-
-		System.out.println(file.getAbsolutePath());
-		mWindow.fileChooser().setCurrentDirectory(file/* .getParentFile() */);
-		mWindow.fileChooser().selectFile(file);
-		mWindow.fileChooser().cancel();
-		boolean found;
-		try {
-			mWindow.internalFrame("BinaryViewer_" + FILE_STR);
-			found = true;
-		} catch (ComponentLookupException e) {
-			found = false;
-		}
-		Assert.assertFalse(found);
-		mWindow.menuItem("menu.file.open").requireVisible();
-		mWindow.menuItem("menu.file.open").click();
-		JFileChooserFixture fileChooserFixture = mWindow.fileChooser();
-		fileChooserFixture.setCurrentDirectory(file);
-		fileChooserFixture.selectFile(file);
-		fileChooserFixture.approveButton().requireEnabled();
-		fileChooserFixture.approve();
-		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
-		mWindow.button("open.button").click();
-		mWindow.fileChooser().setCurrentDirectory(file);
-		mWindow.fileChooser().selectFile(file);
-		mWindow.fileChooser().approve();
-		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
-	}
-
-	@Test
-	public void step03_displayMenu() {
+	public void step02_displayMenu() {
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.undo").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.redo").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.cut").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.copy.binary").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.copy.text").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.paste").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.deleteSelection").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.selectAll").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.select").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.search").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.next").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.previous").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.replace").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.fill").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.insert").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.delete").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.goto").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.edit.externalEditor").requireVisible().requireDisabled();
 
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.toolbar").requireVisible().requireEnabled();
@@ -139,6 +124,42 @@ public class MainFrameTest extends DefaultUITest {
 		binaryViewer.close();
 	}
 
+	
+	@Test
+	public void step03_testOpenFile() {
+		mWindow.menuItem("menu.file").requireVisible();
+		mWindow.menuItem("menu.file").click();
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+
+		System.out.println(file.getAbsolutePath());
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
+		mWindow.fileChooser().cancel();
+		boolean found;
+		try {
+			mWindow.internalFrame("BinaryViewer_" + FILE_STR);
+			found = true;
+		} catch (ComponentLookupException e) {
+			found = false;
+		}
+		Assert.assertFalse(found);
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+		JFileChooserFixture fileChooserFixture = mWindow.fileChooser();
+		fileChooserFixture.setCurrentDirectory(file);
+		fileChooserFixture.selectFile(file);
+		fileChooserFixture.approveButton().requireEnabled();
+		fileChooserFixture.approve();
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
+		mWindow.button("open.button").click();
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
+		mWindow.fileChooser().approve();
+		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
+	}
+
+	
 	@Test
 	public void step04_singleSelection() {
 		mWindow.menuItem("menu.file.open").requireVisible();
@@ -269,7 +290,7 @@ public class MainFrameTest extends DefaultUITest {
 	}
 
 	@Test
-	public void step07_testScroll() {
+	public void step07_testScroll() { 
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
 		mWindow.fileChooser().setCurrentDirectory(file);
@@ -281,7 +302,7 @@ public class MainFrameTest extends DefaultUITest {
 	}
 
 	@Test
-	public void step08_testContentMode() {
+	public void step08_testGoTo() {
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
 		mWindow.fileChooser().setCurrentDirectory(file);
@@ -289,6 +310,33 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.fileChooser().approve();
 		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.goto").requireVisible().requireEnabled().click();
+
+		DialogFixture goToDialog = mWindow.dialog("GoTo");
+		goToDialog.textBox("ADDRESS").enterText("0X2AG 0");
+		goToDialog.textBox("ADDRESS").requireText("0X2A0");
+		goToDialog.button("GOTO_BUTTON").click();
+		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(448);
+		
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.goto").requireVisible().requireEnabled().click();
+
+		goToDialog = mWindow.dialog("GoTo");
+		goToDialog.textBox("ADDRESS").enterText("0");
+		goToDialog.textBox("ADDRESS").requireText("0");
+		goToDialog.button("GOTO_BUTTON").click();
+		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(0);
+		
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.goto").requireVisible().requireEnabled().click();
+
+		
+		goToDialog = mWindow.dialog("GoTo");
+		goToDialog.textBox("ADDRESS").enterText("672");
+		goToDialog.textBox("ADDRESS").requireText("672");
+		goToDialog.button("GOTO_BUTTON").click();
+		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(448);
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {

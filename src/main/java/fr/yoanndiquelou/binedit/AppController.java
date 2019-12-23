@@ -63,6 +63,17 @@ public class AppController {
 	}
 
 	/**
+	 * Remove focused editor if same as saved.
+	 * 
+	 * @param focusedEditor focusedEditor to remove
+	 */
+	public void removeFocusedEditor(BinaryViewer focusedEditor) {
+		if (mFocusedEditor.equals(focusedEditor)) {
+			mFocusedEditor = null;
+		}
+	}
+
+	/**
 	 * Get focused editor
 	 * 
 	 * @return focused editor

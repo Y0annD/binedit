@@ -8,6 +8,7 @@ import org.assertj.swing.core.Robot;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.keystroke.KeyStrokeMappingProvider_mac_fr_FR;
 import org.assertj.swing.launcher.ApplicationLauncher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,6 +35,7 @@ public abstract class DefaultUITest {
 	public void onSetUp() {
 		localSetUp();
 		mRobot = BasicRobot.robotWithCurrentAwtHierarchy();
+		new KeyStrokeMappingProvider_mac_fr_FR();
 		ApplicationLauncher.application(App.class).start();
 		mWindow = WindowFinder.findFrame(MainFrame.class).using(mRobot);
 		

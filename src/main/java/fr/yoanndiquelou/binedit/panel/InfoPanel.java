@@ -41,7 +41,9 @@ public class InfoPanel extends JPanel {
 		setBorder(new BevelBorder(BevelBorder.LOWERED));
 		JPanel sizePanel = new JPanel();
 		sizePanel.add(new JLabel(mBundle.getString("FILE_SIZE")));
-		sizePanel.add(new JLabel(String.valueOf(size)));
+		JLabel sizeLabel = new JLabel(String.valueOf(size));
+		sizeLabel.setName("FILE_SIZE");
+		sizePanel.add(sizeLabel);
 		mShiftPanel = new JPanel();
 		mShiftPanel.add(new JLabel(mBundle.getString("SHIFT")));
 		mShiftLabel = new JLabel();

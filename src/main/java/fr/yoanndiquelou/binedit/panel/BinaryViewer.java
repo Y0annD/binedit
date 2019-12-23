@@ -2,6 +2,7 @@ package fr.yoanndiquelou.binedit.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -69,6 +70,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	private PropertyChangeListener mSettingListener;
 	/** Editor specific setting listener. */
 	private PropertyChangeListener mLocalSettingListener;
+	/** File size. */
+	private long mSize;
 
 	/**
 	 * Binary file viewer.
@@ -86,17 +89,16 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		setIconifiable(true);
 
 		BasicFileAttributes attr;
-		long size;
 		try {
 			attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-			size = attr.size();
+			mSize = attr.size();
 		} catch (IOException e) {
-			size = 0;
+			mSize = 0;
 		}
 		try {
 			mRaf = new RandomAccessFile(mFile, "r");
 
-			mModel = new BinEditTableModel(mRaf, size, mSettings);
+			mModel = new BinEditTableModel(mRaf, mSize, mSettings);
 			TableCellRenderer renderer = new BinEditTableCellRenderer();
 			mTable = new JTable(mModel);
 			mTable.setName("ContentTable");
@@ -157,7 +159,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			});
 
 			getContentPane().add(mScroll, BorderLayout.CENTER);
-			mInfoPanel = new InfoPanel(size);
+			mInfoPanel = new InfoPanel(mSize);
 			getContentPane().add(mInfoPanel, BorderLayout.SOUTH);
 
 			AppController.getInstance().setFocusedEditor(BinaryViewer.this);
@@ -175,7 +177,7 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			Settings.addSettingsChangeListener(mSettingListener);
 
 			mLocalSettingListener = new PropertyChangeListener() {
-				
+
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					mTable.getSelectionModel().removeListSelectionListener(BinaryViewer.this);
@@ -189,10 +191,10 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 					mTable.repaint();
 					mTable.getSelectionModel().addListSelectionListener(BinaryViewer.this);
 					mTable.getColumnModel().getSelectionModel().addListSelectionListener(BinaryViewer.this);
-					
+
 				}
 			};
-			
+
 			mSettings.addPropertyChangeListener(mLocalSettingListener);
 
 			mModel.addTableModelListener(l -> {
@@ -213,22 +215,22 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 				AppController.getInstance().setFocusedEditor(BinaryViewer.this);
 			}
 		});
-		
+
 		addComponentListener(new ComponentListener() {
-			
+
 			@Override
 			public void componentShown(ComponentEvent e) {
 			}
-			
+
 			@Override
 			public void componentResized(ComponentEvent e) {
 				computeMaxColumnNumber();
 			}
-			
+
 			@Override
 			public void componentMoved(ComponentEvent e) {
 			}
-			
+
 			@Override
 			public void componentHidden(ComponentEvent e) {
 			}
@@ -396,17 +398,42 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		mTable.repaint();
 	}
 
+	/**
+	 * Go to address.
+	 * <p>
+	 * Move scrollBar to show specified address.
+	 * </p>
+	 * 
+	 * @param address address to go to
+	 */
+	public void goTo(int address) {
+		int scrollTick = mScroll.getVerticalScrollBar().getMaximum()/mTable.getRowCount();
+		
+		int goToRow = address / mSettings.getNbWordPerLine();
+		mScroll.getVerticalScrollBar().setValue(goToRow*scrollTick);
+	}
+
 	@Override
 	public void dispose() {
 		mSettings.removePropertyChangeListener(mLocalSettingListener);
 		Settings.removePropertyChangeListener(mSettingListener);
 		Settings.removePropertyChangeListener(mModel);
+		AppController.getInstance().removeFocusedEditor(this);
 		try {
 			mRaf.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		super.dispose();
+	}
+
+	/**
+	 * Get File size.
+	 * 
+	 * @return file size
+	 */
+	public long getFileSize() {
+		return mSize;
 	}
 
 	public class DelayedChangeHandler implements ChangeListener {
