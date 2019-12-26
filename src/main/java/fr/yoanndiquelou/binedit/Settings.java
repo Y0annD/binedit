@@ -1,5 +1,6 @@
 package fr.yoanndiquelou.binedit;
 
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public class Settings {
 	public static final String ADDRESSES_HEXA = "ADDRESSES_HEXA";
 	/** Display addresses in hexa. */
 	public static final String INFO_HEXA = "INFO_HEXA";
+	/** Font size. */
+	public static final String FONT_SIZE = "BinaryViewer.font.size";
+	/** Font. */
+	public static final String FONT = "BinaryBiewer.font";
 
 	private static final Preferences mPrefs = Preferences.userRoot().node(Settings.class.getName());
 
@@ -140,6 +145,54 @@ public class Settings {
 				listener.propertyChange(new PropertyChangeEvent(property, property, oldValue, value));
 			}
 		}
+	}
+
+	/**
+	 * Set font size.
+	 * 
+	 * @param size font size
+	 */
+	public static void setFontSize(int size) {
+		int oldValue = getFontSize();
+		if (oldValue != size) {
+			mPrefs.putInt(FONT_SIZE, size);
+			for (PropertyChangeListener listener : mListeners) {
+				listener.propertyChange(new PropertyChangeEvent(FONT_SIZE, FONT_SIZE, oldValue, size));
+			}
+		}
+	}
+
+	/**
+	 * Get font size.
+	 * 
+	 * @return font size
+	 */
+	public static int getFontSize() {
+		return mPrefs.getInt(FONT_SIZE, 12);
+	}
+
+	/**
+	 * Set font.
+	 * 
+	 * @param font new font
+	 */
+	public static void setFont(Font font) {
+		Font oldValue = getFont();
+		if (!oldValue.equals(font)) {
+			mPrefs.put(FONT, font.getFontName());
+			for (PropertyChangeListener listener : mListeners) {
+				listener.propertyChange(new PropertyChangeEvent(FONT, FONT, oldValue, font));
+			}
+		}
+	}
+
+	/**
+	 * Get font.
+	 * 
+	 * @return font
+	 */
+	public static Font getFont() {
+		return new Font(mPrefs.get(FONT, "Courrier"), Font.PLAIN, getFontSize());
 	}
 
 	/**

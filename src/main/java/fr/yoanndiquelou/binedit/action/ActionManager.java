@@ -35,6 +35,8 @@ public class ActionManager {
 	private Action mGotoAction;
 	/** Number of info by line action. */
 	private Action mInfoByLineAction;
+	/** choose font action. */
+	private Action mFontAction;
 
 	public ActionManager() {
 		mUndoAction = new UndoAction();
@@ -54,6 +56,7 @@ public class ActionManager {
 				mBundle.getString("display.infoInHexa.short"), mBundle.getString("display.infoInHexa.long"));
 		mGotoAction = new GotoAction();
 		mInfoByLineAction = new InfoByLineAction();
+		mFontAction = new FontAction();
 	}
 
 	/**
@@ -162,6 +165,15 @@ public class ActionManager {
 	 */
 	public Action getInfoByLineAction() {
 		return mInfoByLineAction;
+	}
+	
+	/**
+	 * Get action to change font.
+	 * 
+	 * @return font action
+	 */
+	public Action getFontAction() {
+		return mFontAction;
 	}
 
 	public static ActionManager getInstance() {

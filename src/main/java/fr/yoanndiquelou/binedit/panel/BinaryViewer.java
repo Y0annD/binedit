@@ -171,6 +171,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 						mInfoPanel.setAddr(mModel.getMinSelectionAddr(), mModel.getMaxSelectionAddr());
 					} else if (Settings.DISPLAY_STATUSBAR.equals(evt.getPropertyName())) {
 						mInfoPanel.setVisible((boolean) evt.getNewValue());
+					} else if (Settings.FONT.equals(evt.getPropertyName()) ||Settings.FONT_SIZE.equals(evt.getPropertyName())) {
+						mTable.repaint();
 					}
 				}
 			};

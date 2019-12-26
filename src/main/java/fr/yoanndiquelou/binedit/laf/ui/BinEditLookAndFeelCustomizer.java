@@ -7,10 +7,12 @@ import java.util.prefs.Preferences;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import fr.yoanndiquelou.binedit.Settings;
+
 
 public final class BinEditLookAndFeelCustomizer {
 
-	private static Preferences mUIPreferences = Preferences.userNodeForPackage(BinEditLookAndFeelCustomizer.class);
+	private static Preferences mUIPreferences = Preferences.userNodeForPackage(Settings.class);
 	
 	public static final void customize() {
 		try {
@@ -19,7 +21,7 @@ public final class BinEditLookAndFeelCustomizer {
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		UIManager.put("BinaryViewer.Font", new Font(/*"Courier"*/"Fixedsys", Font.BOLD, mUIPreferences.getInt("BinaryViewer.font.size", 9)));
+		UIManager.put("BinaryViewer.Font", new Font(mUIPreferences.get("BinaryViewer.Font", "Courrier"), Font.BOLD, mUIPreferences.getInt("BinaryViewer.font.size", 9)));
 		UIManager.put("BinaryViewer.alternateRowColor", Color.lightGray);
 		UIManager.put("Table.focusCellForeground", Color.black);
 		UIManager.put("Table.focusCellBackground", Color.white);

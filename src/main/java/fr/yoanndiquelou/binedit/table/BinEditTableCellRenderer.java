@@ -75,7 +75,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 				}
 			}
 		} else if (model.isValidAddress(row, column)) {
-			if (column >= model.getSettings().getNbWordPerLine() +diffAddress) {
+			if (column >= model.getSettings().getNbWordPerLine() + diffAddress) {
 				result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
 			} else if (!Settings.getVisibility(Settings.INFO_HEXA)) {
 				result = String.valueOf(byteValue);
@@ -101,17 +101,16 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 					+ String.format("%02x", model.getAddress(row, column)).toUpperCase(Locale.getDefault()) + "</html>";
 			cell.setToolTipText(tooltip);
 		}
-		Font font = UIManager.getFont("BinaryViewer.Font");
+		Font font = Settings.getFont();
 		cell.setBorder(mDefaultBorder);
 
 		if (isCellSelected(table, row, column)) {
 			cell.setBackground(UIManager.getColor("Selection.background"));
 			cell.setForeground(Color.white);
-
-			cell.setFont(font.deriveFont(Font.BOLD));
+			cell.setFont(new Font(font.getName(), Font.BOLD, Settings.getFontSize()));
 			cell.setBorder(mSelectedBorder);
 		} else {
-			cell.setFont(font.deriveFont(Font.PLAIN));
+			cell.setFont(new Font(font.getName(), Font.PLAIN, Settings.getFontSize()));
 			if (row % 2 != 0) {
 				cell.setBackground(UIManager.getColor("BinaryViewer.alternateRowColor"));
 			} else {
@@ -120,7 +119,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 			cell.setForeground(Color.black);
 		}
 		if ((column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES))
-				|| (column == (model.getSettings().getNbWordPerLine()-1+diffAddress))) {
+				|| (column == (model.getSettings().getNbWordPerLine() - 1 + diffAddress))) {
 			cell.setBorder(mLimitBorder);
 		}
 		return cell;
