@@ -407,10 +407,22 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	 * @param address address to go to
 	 */
 	public void goTo(int address) {
-		int scrollTick = mScroll.getVerticalScrollBar().getMaximum()/mTable.getRowCount();
-		
+		int scrollTick = mScroll.getVerticalScrollBar().getMaximum() / mTable.getRowCount();
+
 		int goToRow = address / mSettings.getNbWordPerLine();
-		mScroll.getVerticalScrollBar().setValue(goToRow*scrollTick);
+		mScroll.getVerticalScrollBar().setValue(goToRow * scrollTick);
+	}
+
+	/**
+	 * Return first address on first visible row.
+	 * 
+	 * @return first address on first visible row
+	 */
+	public int getFirstVisibleAddress() {
+		int rowHeight = mTable.getRowHeight();
+		Point pos = mScroll.getViewport().getViewPosition();
+		int startRow = (int) (pos.getY() / rowHeight);
+		return startRow * mSettings.getNbWordPerLine();
 	}
 
 	@Override

@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 
+import fr.yoanndiquelou.binedit.AppController;
+import fr.yoanndiquelou.binedit.command.impl.GoToCommand;
 import fr.yoanndiquelou.binedit.panel.BinaryViewer;
 
 public class GoToDialog extends JDialog {
@@ -19,7 +21,7 @@ public class GoToDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = -7741240142437612950L;
-	
+
 	private ResourceBundle mBundle = ResourceBundle
 			.getBundle("fr.yoanndiquelou.binedit.dialog.resources.GoToDialogBundle");
 
@@ -49,12 +51,13 @@ public class GoToDialog extends JDialog {
 		goToButton.addActionListener((a) -> {
 			String value = tf.getText();
 			int address;
-			if(value.toUpperCase().startsWith("0X")) {
+			if (value.toUpperCase().startsWith("0X")) {
 				address = Integer.parseInt(value.substring(2), 16);
-			}else {
-				address=Integer.valueOf(tf.getText());
+			} else {
+				address = Integer.valueOf(tf.getText());
 			}
-			viewer.goTo(address);
+			GoToCommand gotoCmd = new GoToCommand(viewer, address);
+			AppController.getInstance().executeCommand(gotoCmd);
 			dispose();
 		});
 		add(goToButton, c);

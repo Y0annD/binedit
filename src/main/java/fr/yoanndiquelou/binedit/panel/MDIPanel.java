@@ -26,13 +26,14 @@ public class MDIPanel extends JDesktopPane {
 	 * 
 	 * @param file file to watch
 	 */
-	public void open(File file) {
+	public BinaryViewer open(File file) {
+		BinaryViewer viewer = new BinaryViewer(file);
 		SwingUtilities.invokeLater(() -> {
-			BinaryViewer viewer = new BinaryViewer(file);
 			mViewers.add(viewer);
 			add(viewer);
 			viewer.toFront();
 		});
+		return viewer;
 	}
 
 	public Set<BinaryViewer> getViewers() {

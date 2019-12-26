@@ -1,1 +1,0 @@
-package fr.yoanndiquelou.binedit.menu.action;

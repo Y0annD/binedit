@@ -1,7 +1,6 @@
 package fr.yoanndiquelou.binedit.menu;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
@@ -17,10 +16,15 @@ import javax.swing.event.ChangeListener;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.Settings;
+import fr.yoanndiquelou.binedit.command.impl.OpenFileCommand;
 import fr.yoanndiquelou.binedit.frame.ViewerSettingsFrame;
-import fr.yoanndiquelou.binedit.menu.action.DisplayToolbarAction;
-import fr.yoanndiquelou.binedit.menu.action.GotoAction;
-import fr.yoanndiquelou.binedit.menu.action.VisibilityAction;
+import fr.yoanndiquelou.binedit.action.ActionManager;
+import fr.yoanndiquelou.binedit.action.DisplayToolbarAction;
+import fr.yoanndiquelou.binedit.action.GotoAction;
+import fr.yoanndiquelou.binedit.action.OpenAction;
+import fr.yoanndiquelou.binedit.action.RedoAction;
+import fr.yoanndiquelou.binedit.action.UndoAction;
+import fr.yoanndiquelou.binedit.action.VisibilityAction;
 
 /**
  * Main frame menu.
@@ -42,38 +46,22 @@ public class FrameMenu extends JMenuBar {
 
 	public FrameMenu() {
 		setName("MENU_BAR");
+
 		mFileChooser = new JFileChooser();
 		JMenu fileMenu = new JMenu(mBundle.getString("menu.file"));
 		fileMenu.setName("menu.file");
 		JMenu aboutMenu = new JMenu(mBundle.getString("menu.about"));
 		aboutMenu.setName("menu.about");
 		// ------ File menu
-		JMenuItem exitItem = new JMenuItem(mBundle.getString("menu.file.exit"));
+		JMenuItem exitItem = new JMenuItem(ActionManager.getInstance().getExitAction());
 		exitItem.setName("menu.file.exit");
-		// on event exit the app
-		exitItem.addActionListener(e -> {
-			System.exit(0);
-		});
-		JMenuItem openItem = new JMenuItem(mBundle.getString("menu.file.open"));
-		openItem.setName("menu.file.open");
 
-		openItem.addActionListener(l -> {
-			int result = mFileChooser.showOpenDialog(null);
-			if (result == JFileChooser.APPROVE_OPTION) {
-				AppController.getInstance().openFile(mFileChooser.getSelectedFile());
-			}
-		});
-		openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		JMenuItem openItem = new JMenuItem(ActionManager.getInstance().getOpenAction());
+		openItem.setName("menu.file.open");
 		fileMenu.add(openItem);
 		fileMenu.add(exitItem);
 
 		// ------ Display menu
-		JMenuItem preferencesItem = new JMenuItem(mBundle.getString("menu.display.preferences"));
-//		preferencesItem.setEnabled(false);
-//		preferencesItem.addActionListener(l->{
-//			new ViewerSettingsFrame().setVisible(true);
-//		});
-		preferencesItem.setEnabled(!AppController.getInstance().getMDIPanel().getViewers().isEmpty());
 
 		// ------ About menu
 		JMenuItem aboutItem = new JMenuItem(mBundle.getString("menu.about.about"));
@@ -93,13 +81,13 @@ public class FrameMenu extends JMenuBar {
 	public JMenu getEditMenu() {
 		JMenu editMenu = new JMenu(mBundle.getString("menu.edit"));
 		editMenu.setName("menu.edit");
-		JMenuItem cancelItem = new JMenuItem(mBundle.getString("menu.edit.undo"));
-		cancelItem.setName("menu.edit.undo");
-		cancelItem.setEnabled(false);
-		editMenu.add(cancelItem);
-		JMenuItem redoItem = new JMenuItem(mBundle.getString("menu.edit.redo"));
+		JMenuItem undoItem = new JMenuItem(ActionManager.getInstance().getUndoAction());
+		undoItem.setText(mBundle.getString("menu.edit.undo"));
+		undoItem.setName("menu.edit.undo");
+		editMenu.add(undoItem);
+		JMenuItem redoItem = new JMenuItem(ActionManager.getInstance().getRedoAction());
+		redoItem.setText(mBundle.getString("menu.edit.redo"));
 		redoItem.setName("menu.edit.redo");
-		redoItem.setEnabled(false);
 		editMenu.add(redoItem);
 		editMenu.add(new JSeparator());
 		JMenuItem cutItem = new JMenuItem(mBundle.getString("menu.edit.cut"));
@@ -161,9 +149,7 @@ public class FrameMenu extends JMenuBar {
 		deleteItem.setEnabled(false);
 		editMenu.add(deleteItem);
 		editMenu.add(new JSeparator());
-		JMenuItem goToItem = new JMenuItem(new GotoAction());
-		goToItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
-		goToItem.setText(mBundle.getString("menu.edit.goto"));
+		JMenuItem goToItem = new JMenuItem(ActionManager.getInstance().getGoToAction());
 		goToItem.setName("menu.edit.goto");
 		goToItem.setEnabled(false);
 		editMenu.add(goToItem);
@@ -178,6 +164,8 @@ public class FrameMenu extends JMenuBar {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				goToItem.setEnabled(null != AppController.getInstance().getFocusedEditor());
+				undoItem.setEnabled(AppController.getInstance().getUndoStackSize() > 0);
+				redoItem.setEnabled(AppController.getInstance().getRedoStackSize() > 0);
 			}
 		});
 		return editMenu;
@@ -191,20 +179,18 @@ public class FrameMenu extends JMenuBar {
 	public JMenu getDisplayMenu() {
 		JMenu displayMenu = new JMenu(mBundle.getString("menu.display"));
 		displayMenu.setName("menu.display");
-		JCheckBoxMenuItem displayToolbarItem = new JCheckBoxMenuItem(new DisplayToolbarAction());
-		displayToolbarItem.setText(mBundle.getString("menu.display.toolbar"));
+		JCheckBoxMenuItem displayToolbarItem = new JCheckBoxMenuItem(
+				ActionManager.getInstance().getDisplayToolbarAction());
 		displayToolbarItem.setName("menu.display.toolbar");
 		displayToolbarItem.setSelected(Settings.getDisplayToolbar());
 		displayMenu.add(displayToolbarItem);
 		JCheckBoxMenuItem displayDisplaybarItem = new JCheckBoxMenuItem(
-				new VisibilityAction(Settings.DISPLAY_DISPLAYBAR));
-		displayDisplaybarItem.setText(mBundle.getString("menu.display.displaybar"));
+				ActionManager.getInstance().getDisplayDisplayBarAction());
 		displayDisplaybarItem.setName("menu.display.displaybar");
 		displayDisplaybarItem.setSelected(Settings.getVisibility(Settings.DISPLAY_DISPLAYBAR));
 		displayDisplaybarItem.setEnabled(false);
 		displayMenu.add(displayDisplaybarItem);
-		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(new VisibilityAction(Settings.DISPLAY_STATUSBAR));
-		displayStatusBar.setText(mBundle.getString("menu.display.statusbar"));
+		JCheckBoxMenuItem displayStatusBar = new JCheckBoxMenuItem(ActionManager.getInstance().getDisplayStatusBarAction());
 		displayStatusBar.setName("menu.display.statusbar");
 		displayStatusBar.setSelected(Settings.getVisibility(Settings.DISPLAY_STATUSBAR));
 		displayMenu.add(displayStatusBar);
@@ -219,30 +205,20 @@ public class FrameMenu extends JMenuBar {
 		displayMenu.add(colorItem);
 		displayMenu.add(new JSeparator());
 		JCheckBoxMenuItem addressesVisibilityItem = new JCheckBoxMenuItem(
-				new VisibilityAction(Settings.DISPLAY_ADDRESSES));
-		addressesVisibilityItem.setText(mBundle.getString("menu.display.address"));
+				ActionManager.getInstance().getDisplayAddressesAction());
 		addressesVisibilityItem.setName("menu.display.address");
 		displayMenu.add(addressesVisibilityItem);
 		displayMenu.add(new JSeparator());
-		JCheckBoxMenuItem addressesInHexa = new JCheckBoxMenuItem(new VisibilityAction(Settings.ADDRESSES_HEXA));
-		addressesInHexa.setText(mBundle.getString("menu.display.address.hexa"));
+		JCheckBoxMenuItem addressesInHexa = new JCheckBoxMenuItem(ActionManager.getInstance().getAddressesInHexaAction());
 		addressesInHexa.setName("menu.display.address.hexa");
 		displayMenu.add(addressesInHexa);
-		JCheckBoxMenuItem informationInHexa = new JCheckBoxMenuItem(new VisibilityAction(Settings.INFO_HEXA));
-		informationInHexa.setText(mBundle.getString("menu.display.info.hexa"));
+		JCheckBoxMenuItem informationInHexa = new JCheckBoxMenuItem(ActionManager.getInstance().getInfoInHexaAction());
 		informationInHexa.setName("menu.display.info.hexa");
 		displayMenu.add(informationInHexa);
 		displayMenu.add(new JSeparator());
-		JMenuItem infoByLine = new JMenuItem(mBundle.getString("menu.display.info.line"));
+		JMenuItem infoByLine = new JMenuItem(ActionManager.getInstance().getInfoByLineAction());
 		infoByLine.setName("menu.display.info.line");
 		displayMenu.add(infoByLine);
-		infoByLine.addActionListener((e) -> {
-			if (null != AppController.getInstance().getFocusedEditor()) {
-				ViewerSettingsFrame frame = new ViewerSettingsFrame(
-						AppController.getInstance().getFocusedEditor().getSettings());
-				frame.setVisible(true);
-			}
-		});
 		return displayMenu;
 	}
 }

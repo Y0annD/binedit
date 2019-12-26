@@ -86,6 +86,13 @@ public class MainFrameTest extends DefaultUITest {
 		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		binaryViewer.table("ContentTable").requireColumnCount(Settings.getBytesPerLine() * 2 + 1);
 
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.undo").requireEnabled().click();
+
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.redo").requireEnabled().click();
+
+		binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
 		// Test displayAddress
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.address").click();
@@ -108,6 +115,11 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.info.hexa").click();
 		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(3), "26");
+
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.undo").click();
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.redo").click();
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.info.hexa").click();
 		binaryViewer.table("ContentTable").requireCellValue(TableCell.row(1).column(3), "1A");
@@ -124,7 +136,6 @@ public class MainFrameTest extends DefaultUITest {
 		binaryViewer.close();
 	}
 
-	
 	@Test
 	public void step03_testOpenFile() {
 		mWindow.menuItem("menu.file").requireVisible();
@@ -159,7 +170,6 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.internalFrame("BinaryViewer_" + FILE_STR).close();
 	}
 
-	
 	@Test
 	public void step04_singleSelection() {
 		mWindow.menuItem("menu.file.open").requireVisible();
@@ -290,7 +300,7 @@ public class MainFrameTest extends DefaultUITest {
 	}
 
 	@Test
-	public void step07_testScroll() { 
+	public void step07_testScroll() {
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
 		mWindow.fileChooser().setCurrentDirectory(file);
@@ -318,7 +328,17 @@ public class MainFrameTest extends DefaultUITest {
 		goToDialog.textBox("ADDRESS").requireText("0X2A0");
 		goToDialog.button("GOTO_BUTTON").click();
 		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(448);
-		
+
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.undo").requireVisible().requireEnabled().click();
+
+		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(0);
+
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.redo").requireVisible().requireEnabled().click();
+
+		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(448);
+
 		mWindow.menuItem("menu.edit").click();
 		mWindow.menuItem("menu.edit.goto").requireVisible().requireEnabled().click();
 
@@ -327,11 +347,10 @@ public class MainFrameTest extends DefaultUITest {
 		goToDialog.textBox("ADDRESS").requireText("0");
 		goToDialog.button("GOTO_BUTTON").click();
 		binaryViewer.scrollBar("ContentScroll_Vertical").requireValue(0);
-		
+
 		mWindow.menuItem("menu.edit").click();
 		mWindow.menuItem("menu.edit.goto").requireVisible().requireEnabled().click();
 
-		
 		goToDialog = mWindow.dialog("GoTo");
 		goToDialog.textBox("ADDRESS").enterText("672");
 		goToDialog.textBox("ADDRESS").requireText("672");
