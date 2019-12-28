@@ -118,6 +118,7 @@ public class FontDialog extends JDialog {
 		mStyleList.setName("FontStyle");
 		getContentPane().add(new JScrollPane(mStyleList), constraint);
 		constraint.gridx++;
+		constraint.weighty=0;
 		JSpinner sizeSpinner = new JSpinner();
 		JSpinner.NumberEditor spinnerEditor = new JSpinner.NumberEditor(sizeSpinner);
 		sizeSpinner.setEditor(spinnerEditor);
@@ -132,19 +133,20 @@ public class FontDialog extends JDialog {
 
 		constraint.gridx = 0;
 		constraint.gridy++;
-		constraint.weighty = 0;
 		mDemoLabel = new JLabel("0123456789ABCDEF");
 		getContentPane().add(mDemoLabel, constraint);
 		constraint.gridy++;
 
 		constraint.gridx = 1;
 		JButton okButton = new JButton(mBundle.getString("ok"));
+		okButton.setName("ok");
 		okButton.addActionListener(a -> {
 			Settings.setFont(availableFonts.get(mFontList.getSelectedValue()).get(mStyleList.getSelectedIndex()));
 			Settings.setFontSize((int) sizeSpinner.getModel().getValue());
 			dispose();
 		});
 		JButton cancelButton = new JButton(mBundle.getString("cancel"));
+		cancelButton.setName("cancel");
 		cancelButton.addActionListener(a -> dispose());
 		getContentPane().add(okButton, constraint);
 		constraint.gridx++;

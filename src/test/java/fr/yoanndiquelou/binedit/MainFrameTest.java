@@ -66,7 +66,7 @@ public class MainFrameTest extends DefaultUITest {
 		mWindow.menuItem("menu.display.toolbar").requireVisible().requireEnabled();
 		mWindow.menuItem("menu.display.displaybar").requireVisible().requireDisabled();
 		mWindow.menuItem("menu.display.statusbar").requireVisible().requireEnabled();
-		mWindow.menuItem("menu.display.font").requireVisible().requireDisabled();
+		mWindow.menuItem("menu.display.font").requireVisible().requireEnabled();
 		mWindow.menuItem("menu.display.color").requireVisible().requireDisabled();
 		mWindow.menuItem("menu.display.address").requireVisible().requireEnabled();
 		mWindow.menuItem("menu.display.address.hexa").requireVisible().requireEnabled();
@@ -363,5 +363,33 @@ public class MainFrameTest extends DefaultUITest {
 			e.printStackTrace();
 		}
 		binaryViewer.close();
+	}
+
+	@Test
+	public void step09_testSetFont() {
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.font").requireVisible().requireEnabled().click();
+
+		DialogFixture fontDialog = mWindow.dialog();
+		fontDialog.list("FontList").selectItem("Times New Roman");
+
+		fontDialog.list("FontStyle").selectItem("TimesNewRomanPS-BoldMT");
+
+		fontDialog.spinner().increment();
+		fontDialog.spinner().requireValue(13);
+		fontDialog.button("cancel").click();
+		
+		mWindow.menuItem("menu.display").click();
+		mWindow.menuItem("menu.display.font").requireVisible().requireEnabled().click();
+
+		fontDialog = mWindow.dialog();
+		fontDialog.list("FontList").selectItem("Times New Roman");
+		fontDialog.list("FontList").requireSelection("Times New Roman");
+		fontDialog.list("FontStyle").selectItem("TimesNewRomanPS-BoldMT");
+		fontDialog.list("FontStyle").requireSelection("TimesNewRomanPS-BoldMT");
+
+		fontDialog.spinner().increment();
+		fontDialog.spinner().requireValue(13);
+		fontDialog.button("ok").click();
 	}
 }
