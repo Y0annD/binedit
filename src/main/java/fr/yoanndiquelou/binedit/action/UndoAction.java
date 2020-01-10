@@ -29,10 +29,6 @@ public class UndoAction extends AbstractAction {
 
 	}
 
-	@Override
-	public boolean isEnabled() {
-		return AppController.getInstance().getUndoStackSize() > 0;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

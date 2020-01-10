@@ -137,4 +137,10 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	@Override
+	public void dispose() {
+		AppController.getInstance().resetStacks();
+		super.dispose();
+	}
+
 }

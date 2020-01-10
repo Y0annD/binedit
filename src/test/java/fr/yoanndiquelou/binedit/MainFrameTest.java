@@ -5,8 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 import org.assertj.swing.data.TableCell;
@@ -378,7 +383,7 @@ public class MainFrameTest extends DefaultUITest {
 		fontDialog.spinner().increment();
 		fontDialog.spinner().requireValue(13);
 		fontDialog.button("cancel").click();
-		
+
 		mWindow.menuItem("menu.display").click();
 		mWindow.menuItem("menu.display.font").requireVisible().requireEnabled().click();
 
@@ -391,5 +396,43 @@ public class MainFrameTest extends DefaultUITest {
 		fontDialog.spinner().increment();
 		fontDialog.spinner().requireValue(13);
 		fontDialog.button("ok").click();
+	}
+
+	@Test
+	public void step10_testCopyActions() {
+		mWindow.menuItem("menu.file.open").requireVisible();
+		mWindow.menuItem("menu.file.open").click();
+		mWindow.fileChooser().setCurrentDirectory(file);
+		mWindow.fileChooser().selectFile(file);
+		mWindow.fileChooser().approve();
+		JInternalFrameFixture binaryViewer = mWindow.internalFrame("BinaryViewer_" + FILE_STR);
+
+		// from bottom to up
+		binaryViewer.table("ContentTable").cell(TableCell.row(3).column(2)).click();
+		binaryViewer.table("ContentTable").pressKey(KeyEvent.VK_SHIFT).cell(TableCell.row(1).column(1)).click();
+		binaryViewer.table("ContentTable").releaseKey(KeyEvent.VK_SHIFT);
+		binaryViewer.label("AddrLabel").requireText("[0X18;0X49]");
+
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.copy.binary").requireVisible().requireEnabled().click();
+		// Test clipboard content
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		String data;
+		try {
+			data = (String) clipboard.getData(DataFlavor.stringFlavor);
+			StringBuilder expectedContent = new StringBuilder();
+			for(int i = 0x18; i <=0x49;i++) {
+				expectedContent.append(String.format("%02x", i));
+				if(i<0x49) {
+					expectedContent.append(" ");
+				}
+			}
+			assertEquals(expectedContent.toString(), data);
+		} catch (UnsupportedFlavorException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Unable to get clipboard content");
+		}
+
 	}
 }

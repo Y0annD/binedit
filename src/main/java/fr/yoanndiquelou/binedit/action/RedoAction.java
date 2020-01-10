@@ -18,7 +18,8 @@ public class RedoAction extends AbstractAction {
 	private static final long serialVersionUID = 313774862288218051L;
 
 	/** Resources bundle for i18n. */
-	private transient ResourceBundle mBundle = ResourceBundle.getBundle("fr.yoanndiquelou.binedit.action.resources.ActionBundle");
+	private transient ResourceBundle mBundle = ResourceBundle
+			.getBundle("fr.yoanndiquelou.binedit.action.resources.ActionBundle");
 
 	public RedoAction() {
 		super("", new ImageIcon("resources/redo.png"));
@@ -29,12 +30,7 @@ public class RedoAction extends AbstractAction {
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return AppController.getInstance().getRedoStackSize() > 0;
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
-			AppController.getInstance().redo();
+		AppController.getInstance().redo();
 	}
 }

@@ -3,8 +3,6 @@ package fr.yoanndiquelou.binedit;
 import java.io.File;
 import java.util.Stack;
 
-import javax.swing.AbstractAction;
-
 import fr.yoanndiquelou.binedit.action.ActionManager;
 import fr.yoanndiquelou.binedit.command.ICommand;
 import fr.yoanndiquelou.binedit.command.IUndoableCommand;
@@ -34,8 +32,8 @@ public class AppController {
 	 */
 	private AppController() {
 		super();
-		mUndoStack = new Stack<IUndoableCommand>();
-		mRedoStack = new Stack<IUndoableCommand>();
+		mUndoStack = new Stack<>();
+		mRedoStack = new Stack<>();
 	}
 
 	/**
@@ -72,6 +70,7 @@ public class AppController {
 	 */
 	public void setFocusedEditor(BinaryViewer focusedEditor) {
 		mFocusedEditor = focusedEditor;
+		ActionManager.getInstance().getCopyBinaryAction().setEnabled(true);
 	}
 
 	/**
@@ -82,6 +81,7 @@ public class AppController {
 	public void removeFocusedEditor(BinaryViewer focusedEditor) {
 		if (mFocusedEditor.equals(focusedEditor)) {
 			mFocusedEditor = null;
+			ActionManager.getInstance().getCopyBinaryAction().setEnabled(false);
 		}
 	}
 
@@ -125,8 +125,12 @@ public class AppController {
 	 */
 	public void undo() {
 		IUndoableCommand cmd = mUndoStack.pop();
+		if (mRedoStack.isEmpty()) {
+			ActionManager.getInstance().getUndoAction().setEnabled(false);
+		}
 		cmd.undo();
 		mRedoStack.add(cmd);
+		ActionManager.getInstance().getRedoAction().setEnabled(true);
 	}
 
 	/**
@@ -135,6 +139,10 @@ public class AppController {
 	public void redo() {
 		IUndoableCommand cmd = mRedoStack.pop();
 		cmd.execute();
+		if (mRedoStack.isEmpty()) {
+			ActionManager.getInstance().getRedoAction().setEnabled(false);
+		}
+		ActionManager.getInstance().getUndoAction().setEnabled(true);
 		mUndoStack.add(cmd);
 	}
 
@@ -156,4 +164,13 @@ public class AppController {
 		return mRedoStack.size();
 	}
 
+	/**
+	 * Reset stacks.
+	 */
+	public void resetStacks() {
+		mRedoStack.clear();
+		ActionManager.getInstance().getRedoAction().setEnabled(false);
+		mUndoStack.clear();
+		ActionManager.getInstance().getUndoAction().setEnabled(false);
+	}
 }

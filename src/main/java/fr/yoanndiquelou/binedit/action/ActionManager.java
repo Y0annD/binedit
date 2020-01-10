@@ -37,10 +37,14 @@ public class ActionManager {
 	private Action mInfoByLineAction;
 	/** choose font action. */
 	private Action mFontAction;
+	/** Copy content to clipBoard. */
+	private Action mCopyAction;
 
 	public ActionManager() {
 		mUndoAction = new UndoAction();
 		mRedoAction = new RedoAction();
+		mUndoAction.setEnabled(false);
+		mRedoAction.setEnabled(false);
 		mOpenAction = new OpenAction();
 		mExitAction = new ExitAction();
 		mDisplayToolbarAction = new DisplayToolbarAction();
@@ -55,8 +59,11 @@ public class ActionManager {
 		mDisplayInfoInHexaAction = new VisibilityAction(Settings.INFO_HEXA,
 				mBundle.getString("display.infoInHexa.short"), mBundle.getString("display.infoInHexa.long"));
 		mGotoAction = new GotoAction();
+		mGotoAction.setEnabled(false);
 		mInfoByLineAction = new InfoByLineAction();
 		mFontAction = new FontAction();
+		mCopyAction = new CopyBinaryAction();
+		mCopyAction.setEnabled(false);
 	}
 
 	/**
@@ -166,7 +173,7 @@ public class ActionManager {
 	public Action getInfoByLineAction() {
 		return mInfoByLineAction;
 	}
-	
+
 	/**
 	 * Get action to change font.
 	 * 
@@ -174,6 +181,15 @@ public class ActionManager {
 	 */
 	public Action getFontAction() {
 		return mFontAction;
+	}
+
+	/**
+	 * Action to copy content.
+	 * 
+	 * @return copy action
+	 */
+	public Action getCopyBinaryAction() {
+		return mCopyAction;
 	}
 
 	public static ActionManager getInstance() {

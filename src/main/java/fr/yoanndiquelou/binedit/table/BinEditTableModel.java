@@ -204,6 +204,27 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 		return mMaxAddr;
 	}
 
+	/**
+	 * Get binary content for selection.
+	 * 
+	 * @return selected binary content
+	 */
+	public String getBinarySelectionContent() {
+		StringBuilder builder = new StringBuilder();
+		int length = (int)(mMaxAddr - mMinAddr +1);
+		boolean copyAsHexa = Settings.getVisibility(Settings.INFO_HEXA);
+		for(int i = 0; i < length; i++) {
+			byte c = mContent[(int)(mMinAddr-mContentStartAddress)+i];
+			if(copyAsHexa) {
+				builder.append(String.format("%02x", c));
+			}else {
+				builder.append(String.valueOf(c));
+			}
+			builder.append(" ");
+		}
+		return builder.toString().trim();
+	}
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (Settings.DISPLAY_MODE_EVENT.equals(evt.getPropertyName())) {
