@@ -323,8 +323,22 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 		return mSettings;
 	}
 
+	/**
+	 * Get binary content as string.
+	 * 
+	 * @return binary content
+	 */
 	public String getBinaryContentSelection() {
 		return mModel.getBinarySelectionContent();
+	}
+
+	/**
+	 * Get text content as string.
+	 * 
+	 * @return text content
+	 */
+	public String getTextContentSelection() {
+		return mModel.getTextContentSelection();
 	}
 
 	/**

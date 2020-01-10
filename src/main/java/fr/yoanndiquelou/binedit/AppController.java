@@ -71,6 +71,7 @@ public class AppController {
 	public void setFocusedEditor(BinaryViewer focusedEditor) {
 		mFocusedEditor = focusedEditor;
 		ActionManager.getInstance().getCopyBinaryAction().setEnabled(true);
+		ActionManager.getInstance().getCopyTextAction().setEnabled(true);
 	}
 
 	/**
@@ -82,6 +83,7 @@ public class AppController {
 		if (mFocusedEditor.equals(focusedEditor)) {
 			mFocusedEditor = null;
 			ActionManager.getInstance().getCopyBinaryAction().setEnabled(false);
+			ActionManager.getInstance().getCopyTextAction().setEnabled(false);
 		}
 	}
 

@@ -204,6 +204,13 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 		return mMaxAddr;
 	}
 
+	private byte[] getSelectionContentAsByteArray() {
+		int length = (int) (mMaxAddr - mMinAddr + 1);
+		byte[] content = new byte[length];
+		System.arraycopy(mContent, (int) (mMinAddr - mContentStartAddress), content, 0, length);
+		return content;
+	}
+
 	/**
 	 * Get binary content for selection.
 	 * 
@@ -211,18 +218,27 @@ public class BinEditTableModel extends AbstractTableModel implements PropertyCha
 	 */
 	public String getBinarySelectionContent() {
 		StringBuilder builder = new StringBuilder();
-		int length = (int)(mMaxAddr - mMinAddr +1);
+		byte[] content = getSelectionContentAsByteArray();
 		boolean copyAsHexa = Settings.getVisibility(Settings.INFO_HEXA);
-		for(int i = 0; i < length; i++) {
-			byte c = mContent[(int)(mMinAddr-mContentStartAddress)+i];
-			if(copyAsHexa) {
+		for (int i = 0; i < content.length; i++) {
+			byte c = content[i];
+			if (copyAsHexa) {
 				builder.append(String.format("%02x", c));
-			}else {
+			} else {
 				builder.append(String.valueOf(c));
 			}
 			builder.append(" ");
 		}
 		return builder.toString().trim();
+	}
+
+	/**
+	 * Get selected text content.
+	 * 
+	 * @return selected text
+	 */
+	public String getTextContentSelection() {
+		return new String(getSelectionContentAsByteArray());
 	}
 
 	@Override

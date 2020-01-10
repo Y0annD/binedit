@@ -98,7 +98,7 @@ public class FrameMenu extends JMenuBar {
 		copyBinaryItem.setName("menu.edit.copy.binary");
 		copyBinaryItem.setEnabled(false);
 		editMenu.add(copyBinaryItem);
-		JMenuItem copyTextItem = new JMenuItem(mBundle.getString("menu.edit.copy.text"));
+		JMenuItem copyTextItem = new JMenuItem(ActionManager.getInstance().getCopyTextAction());
 		copyTextItem.setName("menu.edit.copy.text");
 		copyTextItem.setEnabled(false);
 		editMenu.add(copyTextItem);

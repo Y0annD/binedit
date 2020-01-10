@@ -37,8 +37,10 @@ public class ActionManager {
 	private Action mInfoByLineAction;
 	/** choose font action. */
 	private Action mFontAction;
-	/** Copy content to clipBoard. */
-	private Action mCopyAction;
+	/** Copy binary content to clipBoard. */
+	private Action mCopyBinaryAction;
+	/** Copy text content to clipBoard. */
+	private Action mCopyTextAction;
 
 	public ActionManager() {
 		mUndoAction = new UndoAction();
@@ -62,8 +64,10 @@ public class ActionManager {
 		mGotoAction.setEnabled(false);
 		mInfoByLineAction = new InfoByLineAction();
 		mFontAction = new FontAction();
-		mCopyAction = new CopyBinaryAction();
-		mCopyAction.setEnabled(false);
+		mCopyBinaryAction = new CopyBinaryAction();
+		mCopyBinaryAction.setEnabled(false);
+		mCopyTextAction = new CopyTextAction();
+		mCopyTextAction.setEnabled(false);
 	}
 
 	/**
@@ -184,12 +188,21 @@ public class ActionManager {
 	}
 
 	/**
-	 * Action to copy content.
+	 * Action to copy binary content.
 	 * 
-	 * @return copy action
+	 * @return copy binary action
 	 */
 	public Action getCopyBinaryAction() {
-		return mCopyAction;
+		return mCopyBinaryAction;
+	}
+	
+	/**
+	 * Action to copy text content.
+	 * 
+	 * @return copy text action
+	 */
+	public Action getCopyTextAction() {
+		return mCopyTextAction;
 	}
 
 	public static ActionManager getInstance() {

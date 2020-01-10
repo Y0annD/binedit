@@ -400,6 +400,17 @@ public class MainFrameTest extends DefaultUITest {
 
 	@Test
 	public void step10_testCopyActions() {
+		StringBuilder expectedContent = new StringBuilder();
+		
+		byte[] content = new byte[0x49-0x18+1];
+		for(int i = 0x18; i <=0x49;i++) {
+			content[i-0X18]=(byte)i;
+			expectedContent.append(String.format("%02x", i));
+			if(i<0x49) {
+				expectedContent.append(" ");
+			}
+		}
+		String expectedTextContent = new String(content);
 		mWindow.menuItem("menu.file.open").requireVisible();
 		mWindow.menuItem("menu.file.open").click();
 		mWindow.fileChooser().setCurrentDirectory(file);
@@ -420,13 +431,6 @@ public class MainFrameTest extends DefaultUITest {
 		String data;
 		try {
 			data = (String) clipboard.getData(DataFlavor.stringFlavor);
-			StringBuilder expectedContent = new StringBuilder();
-			for(int i = 0x18; i <=0x49;i++) {
-				expectedContent.append(String.format("%02x", i));
-				if(i<0x49) {
-					expectedContent.append(" ");
-				}
-			}
 			assertEquals(expectedContent.toString(), data);
 		} catch (UnsupportedFlavorException | IOException e) {
 			// TODO Auto-generated catch block
@@ -434,5 +438,17 @@ public class MainFrameTest extends DefaultUITest {
 			System.out.println("Unable to get clipboard content");
 		}
 
+		mWindow.menuItem("menu.edit").click();
+		mWindow.menuItem("menu.edit.copy.text").requireVisible().requireEnabled().click();
+		// Test clipboard content
+		try {
+			data = (String) clipboard.getData(DataFlavor.stringFlavor);
+			assertEquals(expectedTextContent, data);
+		} catch (UnsupportedFlavorException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Unable to get clipboard content");
+		}
+		
 	}
 }
