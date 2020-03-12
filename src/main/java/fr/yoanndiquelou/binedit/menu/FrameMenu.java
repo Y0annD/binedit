@@ -31,7 +31,7 @@ public class FrameMenu extends JMenuBar {
 	private JFileChooser mFileChooser;
 
 	/** Resources bundle for i18n. */
-	private transient ResourceBundle mBundle = ResourceBundle.getBundle("MenuBundle");
+	private transient ResourceBundle mBundle = ResourceBundle.getBundle("fr.yoanndiquelou.binedit.menu.MenuBundle");
 
 	public FrameMenu() {
 		setName("MENU_BAR");

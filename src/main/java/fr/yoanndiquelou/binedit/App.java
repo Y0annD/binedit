@@ -1,9 +1,6 @@
 package fr.yoanndiquelou.binedit;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-import com.formdev.flatlaf.FlatLightLaf;
 
 import fr.yoanndiquelou.binedit.laf.ui.BinEditLookAndFeelCustomizer;
 
