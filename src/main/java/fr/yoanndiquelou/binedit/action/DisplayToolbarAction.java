@@ -1,7 +1,6 @@
 package fr.yoanndiquelou.binedit.action;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
@@ -9,6 +8,9 @@ import javax.swing.AbstractAction;
 import fr.yoanndiquelou.binedit.Settings;
 
 public class DisplayToolbarAction extends AbstractAction {
+	
+	/** Selected item key. */
+	private static final String SELECTED_KEY = "SwingSelectedKey";
 
 	/**
 	 * 
@@ -27,12 +29,14 @@ public class DisplayToolbarAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Settings.setDisplayToolbar(!Settings.getDisplayToolbar());
+		boolean oldState = Settings.getDisplayToolbar();
+		Settings.setDisplayToolbar(!oldState);
+		firePropertyChange(SELECTED_KEY, oldState, !oldState);
 	}
 
 	@Override
 	public Object getValue(String key) {
-		if ("SwingSelectedKey".equals(key)) {
+		if (SELECTED_KEY.equals(key)) {
 			return Settings.getDisplayToolbar();
 		}
 		return super.getValue(key);

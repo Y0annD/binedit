@@ -5,8 +5,8 @@ import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.AppController;
 
@@ -22,7 +22,7 @@ public class UndoAction extends AbstractAction {
 			.getBundle("fr.yoanndiquelou.binedit.action.resources.ActionBundle");
 
 	public UndoAction() {
-		super("", new ImageIcon("resources/undo.png"));
+		super("", UIManager.getIcon("undo.icon"));
 		putValue(SHORT_DESCRIPTION, mBundle.getString("undo.short"));
 		putValue(LONG_DESCRIPTION, mBundle.getString("undo.long"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));

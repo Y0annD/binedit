@@ -5,7 +5,9 @@ import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.dialog.GoToDialog;
@@ -36,7 +38,12 @@ public class GotoAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		new GoToDialog(AppController.getInstance().getFocusedEditor()).setVisible(true);
+		SwingUtilities.invokeLater(() -> {
+			JDialog goToDialog = new GoToDialog(AppController.getInstance().getFocusedEditor());
+			goToDialog.setLocationRelativeTo(AppController.getInstance().getFocusedEditor());
+			goToDialog.setVisible(true);
+		});
+
 	}
 
 }

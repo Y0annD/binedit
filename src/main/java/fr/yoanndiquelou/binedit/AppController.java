@@ -72,6 +72,8 @@ public class AppController {
 		mFocusedEditor = focusedEditor;
 		ActionManager.getInstance().getCopyBinaryAction().setEnabled(true);
 		ActionManager.getInstance().getCopyTextAction().setEnabled(true);
+		ActionManager.getInstance().getSaveAction().setEnabled(true);
+		ActionManager.getInstance().getSaveAsAction().setEnabled(true);
 	}
 
 	/**
@@ -80,10 +82,12 @@ public class AppController {
 	 * @param focusedEditor focusedEditor to remove
 	 */
 	public void removeFocusedEditor(BinaryViewer focusedEditor) {
-		if (mFocusedEditor.equals(focusedEditor)) {
+		if (null != mFocusedEditor || mFocusedEditor.equals(focusedEditor)) {
 			mFocusedEditor = null;
 			ActionManager.getInstance().getCopyBinaryAction().setEnabled(false);
 			ActionManager.getInstance().getCopyTextAction().setEnabled(false);
+			ActionManager.getInstance().getSaveAction().setEnabled(false);
+			ActionManager.getInstance().getSaveAsAction().setEnabled(false);
 		}
 	}
 

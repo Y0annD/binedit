@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.command.impl.CopyTextCommand;
@@ -31,7 +32,7 @@ public class CopyTextAction extends AbstractAction {
 	 * Copy binary action constructor.
 	 */
 	public CopyTextAction() {
-		super();
+		super("", UIManager.getIcon("copy.icon"));
 		putValue(NAME, mBundle.getString("copy.text.short"));
 		putValue(SHORT_DESCRIPTION, mBundle.getString("copy.text.short"));
 		putValue(SHORT_DESCRIPTION, mBundle.getString("copy.text.long"));

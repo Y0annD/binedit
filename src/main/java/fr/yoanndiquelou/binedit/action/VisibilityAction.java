@@ -19,6 +19,10 @@ public class VisibilityAction extends AbstractAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -4564010127864159711L;
+	
+	/** Selected item key. */
+	private static final String SELECTED_KEY = "SwingSelectedKey";
+	
 	/** Property to check. */
 	private String mProperty;
 
@@ -36,13 +40,15 @@ public class VisibilityAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AppController.getInstance().executeCommand(new VisibilityCommand(mProperty, !Settings.getVisibility(mProperty)));
+		boolean oldState = Settings.getVisibility(mProperty);
+		AppController.getInstance().executeCommand(new VisibilityCommand(mProperty, !oldState));
+		firePropertyChange(SELECTED_KEY, oldState, !oldState);
 
 	}
 
 	@Override
 	public Object getValue(String key) {
-		if ("SwingSelectedKey".equals(key)) {
+		if (SELECTED_KEY.equals(key)) {
 			return Settings.getVisibility(mProperty);
 		}
 		return super.getValue(key);

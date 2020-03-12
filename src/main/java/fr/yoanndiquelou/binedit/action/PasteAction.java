@@ -9,16 +9,16 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.AppController;
-import fr.yoanndiquelou.binedit.command.impl.CopyBinaryCommand;
+import fr.yoanndiquelou.binedit.command.impl.PasteCommand;
 import fr.yoanndiquelou.binedit.panel.BinaryViewer;
 
 /**
- * Action to copy binary content.
+ * Action to paste content.
  * 
  * @author yoann
  *
  */
-public class CopyBinaryAction extends AbstractAction {
+public class PasteAction extends AbstractAction {
 
 	/**
 	 * 
@@ -29,20 +29,19 @@ public class CopyBinaryAction extends AbstractAction {
 			.getBundle("fr.yoanndiquelou.binedit.action.resources.ActionBundle");
 
 	/**
-	 * Copy binary action constructor.
+	 * Paste action constructor.
 	 */
-	public CopyBinaryAction() {
-		super("", UIManager.getIcon("copy.icon"));
-		putValue(NAME, mBundle.getString("copy.binary.short"));
-		putValue(SHORT_DESCRIPTION, mBundle.getString("copy.binary.short"));
-		putValue(SHORT_DESCRIPTION, mBundle.getString("copy.binary.long"));
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
+	public PasteAction() {
+		super("", UIManager.getIcon("paste.icon"));
+		putValue(NAME, mBundle.getString("paste.short"));
+		putValue(SHORT_DESCRIPTION, mBundle.getString("paste.short"));
+		putValue(SHORT_DESCRIPTION, mBundle.getString("paste.long"));
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK));
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		BinaryViewer viewer = AppController.getInstance().getFocusedEditor();
-		AppController.getInstance().executeCommand(new CopyBinaryCommand(viewer));
+		AppController.getInstance().executeCommand(new PasteCommand(viewer));
 	}
-
 }

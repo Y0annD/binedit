@@ -13,20 +13,14 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
 
 import fr.yoanndiquelou.binedit.action.ActionManager;
-import fr.yoanndiquelou.binedit.action.RedoAction;
-import fr.yoanndiquelou.binedit.action.UndoAction;
-import fr.yoanndiquelou.binedit.command.impl.OpenFileCommand;
 import fr.yoanndiquelou.binedit.menu.FrameMenu;
 import fr.yoanndiquelou.binedit.model.DisplayMode;
 import fr.yoanndiquelou.binedit.panel.ExplorerPanel;
@@ -95,15 +89,22 @@ public class MainFrame extends JFrame {
 	private void buildToolbar() {
 		mToolbar = new JToolBar();
 		mToolbar.setName("Toolbar");
-		JButton openButton = new JButton(ActionManager.getInstance().getOpenAction());
+		JButton openButton = mToolbar.add(ActionManager.getInstance().getOpenAction());
 		openButton.setName("open.button");
-		mToolbar.add(openButton);
+		mToolbar.add(ActionManager.getInstance().getSaveAction());
+		mToolbar.add(new JToolBar.Separator());
 		JButton undoButton = new JButton(ActionManager.getInstance().getUndoAction());
 		undoButton.setName("undo.button");
 		mToolbar.add(undoButton);
 		JButton redoButton = new JButton(ActionManager.getInstance().getRedoAction());
 		redoButton.setName("redo.button");
 		mToolbar.add(redoButton);
+		mToolbar.add(new JToolBar.Separator());
+		mToolbar.add(ActionManager.getInstance().getCutAction());
+		mToolbar.add(ActionManager.getInstance().getCopyBinaryAction());
+		mToolbar.add(ActionManager.getInstance().getCopyTextAction());
+		mToolbar.add(ActionManager.getInstance().getPasteAction());
+		mToolbar.add(ActionManager.getInstance().getCleanAction());
 		mToolbar.add(new JToolBar.Separator());
 		ButtonGroup buttonGroup = new ButtonGroup();
 		JToggleButton[] displayModes = new JToggleButton[DisplayMode.values().length];

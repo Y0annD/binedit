@@ -40,7 +40,11 @@
 			<version>3.9.2</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>0.26</version>
+		</dependency>
 	</dependencies>
 
 	<build>

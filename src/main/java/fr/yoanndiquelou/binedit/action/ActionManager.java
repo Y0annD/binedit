@@ -17,6 +17,10 @@ public class ActionManager {
 	private Action mRedoAction;
 	/** Open file action. */
 	private Action mOpenAction;
+	/** Save file action. */
+	private Action mSaveAction;
+	/** Save as file action. */
+	private Action mSaveAsAction;
 	/** Exit action. */
 	private Action mExitAction;
 	/** Display toolbar action. */
@@ -41,6 +45,12 @@ public class ActionManager {
 	private Action mCopyBinaryAction;
 	/** Copy text content to clipBoard. */
 	private Action mCopyTextAction;
+	/** Paste action. */
+	private Action mPasteAction;
+	/** Cut action. */
+	private Action mCutAction;
+	/** Clean action. */
+	private Action mCleanAction;
 
 	public ActionManager() {
 		mUndoAction = new UndoAction();
@@ -48,6 +58,10 @@ public class ActionManager {
 		mUndoAction.setEnabled(false);
 		mRedoAction.setEnabled(false);
 		mOpenAction = new OpenAction();
+		mSaveAction = new SaveAction();
+		mSaveAction.setEnabled(false);
+		mSaveAsAction = new SaveAsAction();
+		mSaveAsAction.setEnabled(false);
 		mExitAction = new ExitAction();
 		mDisplayToolbarAction = new DisplayToolbarAction();
 		mDisplayDisplayBarAction = new VisibilityAction(Settings.DISPLAY_DISPLAYBAR,
@@ -68,6 +82,12 @@ public class ActionManager {
 		mCopyBinaryAction.setEnabled(false);
 		mCopyTextAction = new CopyTextAction();
 		mCopyTextAction.setEnabled(false);
+		mPasteAction = new PasteAction();
+		mPasteAction.setEnabled(false);
+		mCutAction = new CutAction();
+		mCutAction.setEnabled(false);
+		mCleanAction = new CleanAction();
+		mCleanAction.setEnabled(false);
 	}
 
 	/**
@@ -95,6 +115,24 @@ public class ActionManager {
 	 */
 	public Action getOpenAction() {
 		return mOpenAction;
+	}
+
+	/**
+	 * Get save file action.
+	 * 
+	 * @return save file action
+	 */
+	public Action getSaveAction() {
+		return mSaveAction;
+	}
+
+	/**
+	 * Get saveAs file action.
+	 * 
+	 * @return save as file action
+	 */
+	public Action getSaveAsAction() {
+		return mSaveAsAction;
 	}
 
 	/**
@@ -188,6 +226,15 @@ public class ActionManager {
 	}
 
 	/**
+	 * Return the cut action.
+	 * 
+	 * @return cut action
+	 */
+	public Action getCutAction() {
+		return mCutAction;
+	}
+
+	/**
 	 * Action to copy binary content.
 	 * 
 	 * @return copy binary action
@@ -195,7 +242,7 @@ public class ActionManager {
 	public Action getCopyBinaryAction() {
 		return mCopyBinaryAction;
 	}
-	
+
 	/**
 	 * Action to copy text content.
 	 * 
@@ -203,6 +250,24 @@ public class ActionManager {
 	 */
 	public Action getCopyTextAction() {
 		return mCopyTextAction;
+	}
+
+	/**
+	 * Action to paste clipboard content to file.
+	 * 
+	 * @return paste content action
+	 */
+	public Action getPasteAction() {
+		return mPasteAction;
+	}
+
+	/**
+	 * Action to clean selection.
+	 * 
+	 * @return clean action
+	 */
+	public Action getCleanAction() {
+		return mCleanAction;
 	}
 
 	public static ActionManager getInstance() {

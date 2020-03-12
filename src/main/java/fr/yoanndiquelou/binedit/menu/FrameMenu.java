@@ -1,7 +1,5 @@
 package fr.yoanndiquelou.binedit.menu;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.util.ResourceBundle;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -10,21 +8,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.Settings;
-import fr.yoanndiquelou.binedit.command.impl.OpenFileCommand;
-import fr.yoanndiquelou.binedit.frame.ViewerSettingsFrame;
 import fr.yoanndiquelou.binedit.action.ActionManager;
-import fr.yoanndiquelou.binedit.action.DisplayToolbarAction;
-import fr.yoanndiquelou.binedit.action.FontAction;
-import fr.yoanndiquelou.binedit.action.OpenAction;
-import fr.yoanndiquelou.binedit.action.RedoAction;
-import fr.yoanndiquelou.binedit.action.UndoAction;
-import fr.yoanndiquelou.binedit.action.VisibilityAction;
 
 /**
  * Main frame menu.
@@ -58,7 +47,15 @@ public class FrameMenu extends JMenuBar {
 
 		JMenuItem openItem = new JMenuItem(ActionManager.getInstance().getOpenAction());
 		openItem.setName("menu.file.open");
+		JMenuItem saveItem = new JMenuItem(ActionManager.getInstance().getSaveAction());
+		saveItem.setName("menu.file.save");
+		JMenuItem saveAsItem = new JMenuItem(ActionManager.getInstance().getSaveAsAction());
+		saveAsItem.setName("menu.file.saveAs");
 		fileMenu.add(openItem);
+		fileMenu.add(new JSeparator());
+		fileMenu.add(saveItem);
+		fileMenu.add(saveAsItem);
+		fileMenu.add(new JSeparator());
 		fileMenu.add(exitItem);
 
 		// ------ Display menu
@@ -90,7 +87,7 @@ public class FrameMenu extends JMenuBar {
 		redoItem.setName("menu.edit.redo");
 		editMenu.add(redoItem);
 		editMenu.add(new JSeparator());
-		JMenuItem cutItem = new JMenuItem(mBundle.getString("menu.edit.cut"));
+		JMenuItem cutItem = new JMenuItem(ActionManager.getInstance().getCutAction());
 		cutItem.setName("menu.edit.cut");
 		cutItem.setEnabled(false);
 		editMenu.add(cutItem);
@@ -102,11 +99,11 @@ public class FrameMenu extends JMenuBar {
 		copyTextItem.setName("menu.edit.copy.text");
 		copyTextItem.setEnabled(false);
 		editMenu.add(copyTextItem);
-		JMenuItem pasteItem = new JMenuItem(mBundle.getString("menu.edit.paste"));
+		JMenuItem pasteItem = new JMenuItem(ActionManager.getInstance().getPasteAction());
 		pasteItem.setName("menu.edit.paste");
 		pasteItem.setEnabled(false);
 		editMenu.add(pasteItem);
-		JMenuItem deleteSelectionItem = new JMenuItem(mBundle.getString("menu.edit.deleteSelection"));
+		JMenuItem deleteSelectionItem = new JMenuItem(ActionManager.getInstance().getCleanAction());
 		deleteSelectionItem.setName("menu.edit.deleteSelection");
 		deleteSelectionItem.setEnabled(false);
 		editMenu.add(deleteSelectionItem);

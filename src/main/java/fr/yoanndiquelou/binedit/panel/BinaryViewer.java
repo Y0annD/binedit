@@ -2,7 +2,6 @@ package fr.yoanndiquelou.binedit.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -245,6 +244,15 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 	}
 
 	/**
+	 * File associated to this viewer.
+	 * 
+	 * @return file associated to this viewer
+	 */
+	public File getFile() {
+		return mFile;
+	}
+
+	/**
 	 * Update selection.
 	 */
 	public void updateSelection() {
@@ -276,9 +284,9 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 			column = mTable.getColumnModel().getColumn(i);
 			column.sizeWidthToFit();
 			if (i > mSettings.getNbWordPerLine()) {
-				width = 17;
+				width = 20;
 			} else {
-				width = 24;
+				width = 27;
 			}
 			column.setMaxWidth(width);
 			column.setMinWidth(width);
@@ -437,6 +445,8 @@ public class BinaryViewer extends JInternalFrame implements ListSelectionListene
 
 		int goToRow = address / mSettings.getNbWordPerLine();
 		mScroll.getVerticalScrollBar().setValue(goToRow * scrollTick);
+		mModel.updateSelection(address, address);
+		updateSelection();
 	}
 
 	/**

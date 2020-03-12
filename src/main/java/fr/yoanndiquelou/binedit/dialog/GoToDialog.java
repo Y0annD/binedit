@@ -2,14 +2,11 @@ package fr.yoanndiquelou.binedit.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.text.MaskFormatter;
-import javax.swing.text.NumberFormatter;
 
 import fr.yoanndiquelou.binedit.AppController;
 import fr.yoanndiquelou.binedit.command.impl.GoToCommand;
@@ -22,9 +19,14 @@ public class GoToDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -7741240142437612950L;
 
-	private ResourceBundle mBundle = ResourceBundle
+	private transient ResourceBundle mBundle = ResourceBundle
 			.getBundle("fr.yoanndiquelou.binedit.dialog.resources.GoToDialogBundle");
 
+	/**
+	 * Dialog to go to specific position.
+	 * 
+	 * @param viewer associated viewer
+	 */
 	public GoToDialog(BinaryViewer viewer) {
 		setName("GoTo");
 		setTitle(mBundle.getString("TITLE"));
