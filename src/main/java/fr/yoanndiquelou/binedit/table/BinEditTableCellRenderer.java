@@ -54,7 +54,7 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		String result;
-		byte byteValue = (byte) ((int) value & 0xFF);
+		int byteValue = (int) value & 0xFF;
 		BinEditTableModel model = (BinEditTableModel) table.getModel();
 		int diffAddress = 0;
 		if (Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
@@ -76,7 +76,9 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 			}
 		} else if (model.isValidAddress(row, column)) {
 			if (column >= model.getSettings().getNbWordPerLine() + diffAddress) {
-				result = new String(new byte[] { byteValue }).replace("\n", ".").replace(" ", ".");
+				result = new String(
+						(byteValue > 128 ? new byte[] { 0, (byte) byteValue } : new byte[] { (byte) byteValue }))
+								.replace("\n", ".").replace(" ", ".");
 			} else if (!Settings.getVisibility(Settings.INFO_HEXA)) {
 				result = String.valueOf(byteValue);
 			} else {
@@ -93,10 +95,10 @@ public class BinEditTableCellRenderer extends DefaultTableCellRenderer {
 		if (column == 0 && Settings.getVisibility(Settings.DISPLAY_ADDRESSES)) {
 			setHorizontalAlignment(JLabel.RIGHT);
 		} else if (column <= model.getSettings().getNbWordPerLine()) {
-			String tooltip = "<html><b>" + mBundle.getString("VALUE") + "</b><br/><b>" + mBundle.getString("BINARY")
+			String tooltip = "<html><b>" + mBundle.getString("VALUE") + "</b><br/><b>" + mBundle.getString("DECIMAL")
 					+ " :</b> " + byteValue + "<br /><b>" + mBundle.getString("HEXA") + ": </b>0x"
 					+ String.format("%02x", byteValue).toUpperCase(Locale.getDefault()) + "<hr/><b>"
-					+ mBundle.getString("ADDRESS") + "</b><br/><b>" + mBundle.getString("BINARY") + " : </b>"
+					+ mBundle.getString("ADDRESS") + "</b><br/><b>" + mBundle.getString("DECIMAL") + " : </b>"
 					+ model.getAddress(row, column) + "<br/><b>" + mBundle.getString("HEXA") + ": </b>0x"
 					+ String.format("%02x", model.getAddress(row, column)).toUpperCase(Locale.getDefault()) + "</html>";
 			cell.setToolTipText(tooltip);
